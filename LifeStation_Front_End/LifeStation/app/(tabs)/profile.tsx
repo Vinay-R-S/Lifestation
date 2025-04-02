@@ -2,9 +2,21 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
+interface Task {
+  id: string;
+  title: string;
+  deadline?: string;
+  type: 'todo' | 'progress';
+  completed?: boolean;
+  progress?: number;
+  progressHistory?: { date: string; value: number; }[];
+  startDate?: string;
+  isHabit?: boolean;
+}
+
 export default function ProfileScreen() {
   // This would typically come from your global state management
-  const tasks = []; // You'll need to access your tasks here
+  const tasks: Task[] = []; // You'll need to access your tasks here
 
   const habits = tasks.filter(task => task.isHabit);
 
@@ -31,7 +43,7 @@ export default function ProfileScreen() {
                   <View style={styles.habitInfo}>
                     <Text style={styles.habitTitle}>{habit.title}</Text>
                     <Text style={styles.habitSubtext}>
-                      Became a habit on {new Date(habit.startDate).toLocaleDateString()}
+                      Became a habit on {habit.startDate ? new Date(habit.startDate).toLocaleDateString() : 'unknown date'}
                     </Text>
                   </View>
                   <View style={styles.habitBadge}>

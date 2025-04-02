@@ -47,35 +47,23 @@ export default function TaskManager() {
   const checkForHabit = (task: Task) => {
     if (!task.progressHistory || task.isHabit) return false;
     
-    // Sort progress updates by date
-    const sortedUpdates = [...task.progressHistory].sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
-
-    if (sortedUpdates.length < 21) return false;
-
-    // Check the last 21 updates
-    const last21Updates = sortedUpdates.slice(0, 21);
     const today = new Date();
-    const twentyOneDaysAgo = new Date(today.getTime() - 21 * 24 * 60 * 60 * 1000);
-
-    // Check if we have 21 consecutive days of progress
-    for (let i = 0; i < 21; i++) {
-      const updateDate = new Date(last21Updates[i].date);
-      const expectedDate = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
-      
-      // Check if we have an update for each of the last 21 days
-      if (updateDate.toDateString() !== expectedDate.toDateString()) {
-        return false;
-      }
-      
-      // Check if the progress value was incremented
-      if (i > 0 && last21Updates[i].value >= last21Updates[i-1].value) {
-        return false;
-      }
-    }
+    const startDate = new Date(task.startDate!);
+    const daysDifference = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
     
-    return true;
+    // Check if task has been done for 21 consecutive days
+    if (daysDifference >= 21) {
+      const last21Days = new Set();
+      task.progressHistory.forEach(update => {
+        const updateDate = new Date(update.date);
+        if (updateDate >= new Date(today.getTime() - 21 * 24 * 60 * 60 * 1000)) {
+          last21Days.add(updateDate.toDateString());
+        }
+      });
+      
+      return last21Days.size >= 21;
+    }
+    return false;
   };
 
   const updateProgress = (taskId: string, increment: boolean) => {
