@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -14,43 +15,51 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
         tabBarStyle: {
-          ...Platform.select({
-            ios: {
-              position: 'relative',
-            },
-            default: {
-              position: 'relative',
-            },
-          }),
-          bottom: 0,
-          height: 60,
           backgroundColor: '#352722',
+          borderTopColor: '#9A1C22',
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 8,
+        },
+        tabBarActiveTintColor: '#FEDC32',
+        tabBarInactiveTintColor: '#F7A721',
+        headerStyle: {
+          backgroundColor: '#352722',
+        },
+        headerTintColor: '#FEDC32',
+        headerTitleStyle: {
+          fontWeight: 'bold',
         },
       }}>
       <Tabs.Screen
         name="avatar"
         options={{
           title: 'Avatar',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
+          ),
+          headerTitle: 'My Avatar',
         }}
       />
       <Tabs.Screen
         name="tasks"
         options={{
           title: 'Tasks',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="checklist" color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="list" size={size} color={color} />
+          ),
+          headerTitle: 'My Tasks',
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="gear" color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings" size={size} color={color} />
+          ),
+          headerTitle: 'My Profile',
         }}
       />
     </Tabs>
