@@ -1,9 +1,11 @@
 import { View, Text, StyleSheet } from 'react-native';
+import AvatarSVG from "../../components/Avatar/avatar";
 
 export default function AvatarScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Avatar Screen</Text>
+      <AvatarSVG/>
     </View>
   );
 }
