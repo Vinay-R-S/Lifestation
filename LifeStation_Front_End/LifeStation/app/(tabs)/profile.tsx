@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useGameState } from '../../context/GameStateContext';
+import GameStats from '../../components/GameStats';
 
 interface Task {
   id: string;
@@ -15,13 +17,13 @@ interface Task {
 }
 
 export default function ProfileScreen() {
-  // This would typically come from your global state management
+  const { state } = useGameState();
   const tasks: Task[] = []; // You'll need to access your tasks here
-
   const habits = tasks.filter(task => task.isHabit);
 
   return (
     <View style={styles.container}>
+      <GameStats />
       <ScrollView style={styles.content}>
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
@@ -44,6 +46,9 @@ export default function ProfileScreen() {
                     <Text style={styles.habitTitle}>{habit.title}</Text>
                     <Text style={styles.habitSubtext}>
                       Became a habit on {habit.startDate ? new Date(habit.startDate).toLocaleDateString() : 'unknown date'}
+                    </Text>
+                    <Text style={styles.habitSubtext}>
+                      Current streak: {state.habitStreaks[habit.id] || 0} days
                     </Text>
                   </View>
                   <View style={styles.habitBadge}>

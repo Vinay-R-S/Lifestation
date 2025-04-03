@@ -109,7 +109,7 @@ export default function AddTaskModal({ visible, onClose, onAdd }: AddTaskModalPr
                       ]}
                       onPress={() => setNewTask({ ...newTask, type: 'progress' })}
                     >
-                      <Text style={styles.typeText}>Progress Task</Text>
+                      <Text style={styles.typeText}>Habit Task</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
