@@ -3,6 +3,42 @@ import { View, Button, ScrollView, Text, StyleSheet } from "react-native";
 import Svg, { G, Path } from "react-native-svg";
 import elementsData from "../../data/jsons/male.json";
 
+const getIrisFillColor = (fill: string) => {
+    switch (fill) {
+        case "tone":
+            return "#4e60a3";
+        case "sd1":
+            return "#3b4a87";
+        case "sd2":
+            return "#5b6ea6";
+        case "sd3":
+            return "#7c91c3";
+        case "hl1":
+            return "#a7b8e0";
+        case "hl2":
+            return "#c8d6f0";
+        case "hl3":
+            return "#e6ecfa";
+        default:
+            return fill;
+    }
+};
+
+const getFillColor = (fillType: string) => {
+    switch (fillType) {
+        case "tone":
+            return "#f3d4cf";
+        case "sd1":
+            return "#000000";
+        case "sd2":
+            return "#f3d4cf";
+        case "sd3":
+            return "#6e5b52";
+        default:
+            return fillType;
+    }
+};
+
 const elementsInfo = elementsData.elementsInfo;
 
 // Type or json structure with object maps
@@ -31,24 +67,54 @@ const eyebrowsIds = rawEyebrowData.map((_, index) => index);
 
 
 // 📌 Clothes *****************************************************************************************************
-// type ClothesPart = { path: string; fill: string };
+type ClothesPaths = { [key: string]: { path: string; fill: string }[]; };
 
-// type ClothesShapeEntry = {
-//   [key: string]: ClothesPart[] | undefined;
-// };
-
-// const rawClothesShapes = elementsInfo.clothes.shapes as ClothesShapeEntry[];
-
-// // Convert to proper ClothesPart[][]
-// const rawClothesData: ClothesPart[][] = rawClothesShapes.map((entry) => {
-//   const firstKey = Object.keys(entry).find((key) => entry[key] !== undefined);
-//   return firstKey ? entry[firstKey]! : []; // Return [] if nothing is defined
-// });
-
-// const clothesIds = rawClothesData.map((_, index) => index);
+const clothesShapesRaw = Object.assign({}, ...elementsInfo.clothes.shapes) as ClothesPaths;
+const clothesShapeIds = Object.keys(clothesShapesRaw);
 
 
-// 📌 Eyes ********************************************************************************************************
+// 📌 Eyes-front *************************************************************************************************
+type EyesShape = { left: { path: string; fill: string }[]; right: { path: string; fill: string }[]; };
+type EyesFrontShapes = { [key: string]: EyesShape; };
+
+const eyesFrontRaw = elementsInfo.eyesfront.shapes;
+const eyesFrontShapes = eyesFrontRaw.reduce((acc, shapeObj, index) => { acc[(index + 1).toString()] = shapeObj; return acc; }, {} as EyesFrontShapes);
+const eyesFrontShapeIds = Object.keys(eyesFrontShapes);
+
+
+// 📌 Eyes-back *************************************************************************************************
+type EyesBackShape = { leftEyeBack: { path: string; fill: string }[]; rightEyeBack: { path: string; fill: string }[]; };
+type EyesBackShapes = { [key: string]: EyesBackShape; };
+
+const eyesBackRawShapes = elementsInfo.eyesback.shapes;
+const eyesBackShapes = eyesBackRawShapes.reduce((acc, shapeObj, index) => { acc[(index + 1).toString()] = shapeObj; return acc; }, {} as EyesBackShapes);
+const eyesBackShapeIds = Object.keys(eyesBackShapes);
+
+
+// 📌 Iris ********************************************************************************************************
+type IrisShape = { left: { path: string; fill: string }[]; right: { path: string; fill: string }[]; };
+type EyesIrisShapes = { [key: string]: IrisShape; };
+
+const irisRawShapes = elementsInfo.eyesiris.shapes;
+const irisShapes = irisRawShapes.reduce((acc, shapeObj, index) => { acc[(index + 1).toString()] = shapeObj; return acc; }, {} as EyesIrisShapes);
+const irisShapeIds = Object.keys(irisShapes);
+
+
+// 📌 FaceShape **************************************************************************************************
+type FaceShape = { faceShapeSingle: { path: string; fill: string }[]; };
+type FaceShapes = { [key: string]: FaceShape };
+
+const faceShapeRaw = elementsInfo.faceshape.shapes;
+const faceShapes = faceShapeRaw.reduce((acc, shapeObj, index) => { acc[(index + 1).toString()] = { faceShapeSingle: shapeObj.single }; return acc; }, {} as FaceShapes);
+const faceShapeIds = Object.keys(faceShapes);
+
+// 📌 Hair *******************************************************************************************************
+type HairPath = { path: string; fill: string; };
+type HairShape = { front: HairPath[]; };
+type HairShapes = { [id: string]: HairShape; };
+
+const hairRawShapes = elementsInfo.hair.shapes;
+const hairShapes: HairShapes = hairRawShapes.reduce((acc, shapeObj, index) => { acc[(index + 1).toString()] = { front: shapeObj.front }; return acc; }, {} as HairShapes);
 
 
 const AvatarCustomization = () => {
@@ -64,12 +130,35 @@ const AvatarCustomization = () => {
     const [selectedEyebrowId, setSelectedEyebrowId] = useState(0);
 
     // 📌 Clothes *************************************************************************************************
-    const [selectedClothesId, setSelectedClothesId] = useState<number>(0);
+    const [currentClothesId, setCurrentClothesId] = useState(clothesShapeIds[0]);
+    const currentPaths = clothesShapesRaw[currentClothesId];
+
+    // 📌 Eyes-font ***********************************************************************************************
+    const [currentEyesId, setCurrentEyesId] = useState(eyesFrontShapeIds[0]);
+    const currentEye = eyesFrontShapes[currentEyesId];
+    const leftEye = currentEye.left;
+    const rightEye = currentEye.right;
+
+    // 📌 Eyes-back ***********************************************************************************************
+    const [selectedEyeBackId, setSelectedEyeBackId] = useState(eyesBackShapeIds[0]);
+    const { leftEyeBack, rightEyeBack } = eyesBackShapes[selectedEyeBackId];
+
+    // 📌 Iris ****************************************************************************************************
+    const [selectedIrisId, setSelectedIrisId] = useState(irisShapeIds[0]);
+    const { left, right } = irisShapes[selectedIrisId];
+
+    // 📌 FaceShape ***********************************************************************************************
+    const [selectedFaceShapeId, setSelectedFaceShapeId] = useState("1");
+
+    // 📌 Hair ****************************************************************************************************
+    const [selectedHairId, setSelectedHairId] = useState("1");
+
+
 
     return (
         <>
-            <View style={{ "width": "100%", "marginTop": 16, "marginBottom": 16, "display": "flex", "justifyContent": "center", "alignItems": "center" }}>
-                <Svg width="200px" height="200px" viewBox="0 0 200 200" preserveAspectRatio="xMinYMin meet">
+            <View style={{ "width": "100%", "marginTop": 12, "marginBottom": 16, "display": "flex", "justifyContent": "center", "alignItems": "center" }}>
+                <Svg width="200" height="200" viewBox="0 0 200 200" preserveAspectRatio="xMinYMin meet">
                     {/* <Defs /> */}
                     <G id="svga-group-wrapper">
                         {/* Background */}
@@ -103,8 +192,9 @@ const AvatarCustomization = () => {
 
                                 {/* Clothes */}
                                 <G id="svga-group-clothes-single">
-                                    <Path id="SvgjsPath3285" d="m143.2 220 .1-3.6 26.8-2.6s-1.2-16.5-1.9-20-2.3-8.6-12.1-14-27.7-12.4-27.7-12.4c-31.6 30.5-56-.1-56.7 0 0 0-17.9 7-27.7 12.4s-11.4 10.5-12.1 14-1.9 20-1.9 20l26.8 2.6v3.6h86.4z" data-colored="true" data-fillType="tone" data-strokeType="none" fill="#09aac5" strokeWidth="1" opacity="1" />
-                                    <Path id="SvgjsPath3286" d="M170.7 213.8c-.4-5.8-.7-11.6-1.3-17.4-.3-2.9-.9-6-2.6-8.6-1.6-2.6-3.9-4.6-6.4-6.3-2.4-1.7-5.1-3.1-7.7-4.4-2.6-1.3-5.3-2.5-7.9-3.7-5.3-2.4-10.7-4.5-16.2-6.6-.2-.1-.5 0-.7.1-3.8 3.8-8 7.1-12.7 9.6-4.7 2.5-9.9 4-15.2 4.1-2.7 0-5.3-.3-7.9-.9-2.6-.7-5.1-1.7-7.4-2.9s-4.6-2.7-6.7-4.3c-1.1-.8-2.1-1.7-3.1-2.6-.5-.4-1-.9-1.4-1.4l-.7-.7-.4-.4-.2-.2-.1-.1-.1-.1s-.2-.1-.3-.1h-.1c-5.4 2.1-10.8 4.2-16.2 6.5-2.7 1.1-5.3 2.3-8 3.6-2.6 1.3-5.2 2.6-7.7 4.3-2.4 1.7-4.8 3.7-6.4 6.3-1.7 2.6-2.4 5.7-2.7 8.6-.7 5.8-1.1 11.6-1.6 17.4 0 .5.4 1 .9 1.1l13.4 1.3 12.5 1.2v2.7c0 .6.5 1 1 1 7.3 0 14.5 0 21.8-.1l21.7-.2 43-.6.2-3.5 13.2-1 13.4-1.1c.4 0 .6-.3.6-.6zm-14.1.8-13.4 1.6c-.1 0-.2.1-.2.2l.1 3.6-43.4-.6-21.5-.2c-6.8-.1-13.6-.1-20.4-.1v-2.6c0-.5-.4-1-.9-1L43.5 214 31 212.9c.4-5.4.8-10.9 1.3-16.3.3-2.9.9-5.6 2.3-7.9 1.5-2.3 3.6-4.2 5.9-5.9 2.3-1.6 4.8-3 7.4-4.3s5.2-2.6 7.8-3.8c5.2-2.4 10.5-4.6 15.8-6.8l.2.1.4.3.7.7c.5.5 1 .9 1.5 1.4 1 .9 2.1 1.8 3.1 2.6 2.2 1.6 4.4 3.1 6.8 4.4 4.8 2.5 10.2 3.9 15.6 3.9s10.8-1.5 15.7-3.9c4.7-2.4 9-5.6 12.8-9.2 5.2 2.1 10.4 4.4 15.6 6.7 2.6 1.2 5.3 2.4 7.8 3.7 2.6 1.3 5.1 2.6 7.4 4.2 2.3 1.6 4.5 3.5 6 5.8s2.2 5 2.4 7.9c.3 2.9.6 5.8.9 8.6l.7 8.1-12.5 1.4zm-100.5-7.3-.3-1.1-.4-1c-.9-2.8-2.3-5.4-3.8-7.9-1.6-2.5-3.4-4.8-5.5-6.8s-4.4-3.9-7-5.1c1.2.8 2.3 1.7 3.4 2.6 1.1.9 2.1 1.9 3.1 3 1.9 2.1 3.7 4.4 5.2 6.8.4.6.7 1.2 1.1 1.8.4.6.7 1.2 1 1.9.3.6.7 1.3 1 1.9.3.7.6 1.3.9 2l.4 1 .4 1 .7 2c.5 1.4.8 2.8 1.3 4.1-.3-1.4-.5-2.9-.9-4.3l-.6-1.9zm92.9-9.9c-1.5 2.5-2.9 5.1-3.8 7.9l-.4 1-.3 1.1-.6 2.1c-.3 1.4-.6 2.8-.9 4.3.5-1.4.8-2.8 1.3-4.1l.7-2 .4-1 .4-1c.3-.6.6-1.3.9-2 .3-.6.6-1.3 1-1.9.3-.6.6-1.3 1-1.9.4-.6.7-1.2 1.1-1.8 1.5-2.4 3.3-4.7 5.2-6.8.9-1.1 2-2.1 3.1-3 1.1-1 2.2-1.9 3.4-2.6-2.6 1.3-4.9 3.1-7 5.1-2.1 1.8-3.9 4.2-5.5 6.6z" data-colored="true" data-fillType="sd2" data-strokeType="none" fill="#008fa6" strokeWidth="1" opacity="1" />
+                                    {currentPaths.map((pathObj, index) => (
+                                        <Path key={index} d={pathObj.path} fill="#900000" strokeWidth="1" opacity="1" data-fillType={pathObj.fill} data-colored="true" data-strokeType="none" />
+                                    ))}
                                 </G>
 
                                 {/* Head */}
@@ -148,8 +238,9 @@ const AvatarCustomization = () => {
                                     {/* Face shape */}
                                     <G id="svga-group-faceshape-wrap" transform="matrix(1,0,0,1,0,0)">
                                         <G id="svga-group-faceshape-single">
-                                            <Path id="SvgjsPath3134" d="M141 88.4c0 30.3-18.9 65.2-41 65.2s-41-34.9-41-65.2 18.9-47 41-47 41 16.6 41 47z" data-colored="true" data-fillType="tone" data-strokeType="none" fill="#f3d4cf" strokeWidth="1" opacity="1" />
-                                            <Path id="SvgjsPath3135" d="M100 41.3c-22.1 0-41.1 16.7-41.1 47s19 65.5 41.1 65.5 41.1-35.2 41.1-65.5-19-47-41.1-47zm28.2 13.6.8.8c.3.3.5.6.8.9.3.3.5.6.8.9l.7.9c.2.3.5.6.7.9l.7 1 .3.5.3.5c.4.7.9 1.3 1.2 2l.6 1c.2.3.4.7.5 1l.5 1.1.5 1.1c.2.4.3.7.5 1.1l.4 1.1c2.3 5.9 3.2 12.4 3.3 18.7 0 6.4-.9 12.8-2.6 18.9-.8 3.1-1.9 6.1-3.1 9-1.2 2.9-2.5 5.8-4 8.6s-3.1 5.5-4.8 8.1c-.9 1.3-1.8 2.6-2.7 3.8-.9 1.2-1.9 2.4-3 3.6-2 2.3-4.3 4.4-6.7 6.3-2.4 1.8-5 3.3-7.8 4.3-1.4.5-2.8.9-4.3 1-1.5.2-2.9.2-4.4.1-3-.2-5.9-1.2-8.6-2.6-2.7-1.4-5.3-3.3-7.6-5.4-2.3-2.1-4.4-4.5-6.3-7.1s-3.6-5.3-5-8.1c-1.5-2.8-2.8-5.7-3.9-8.7-.6-1.5-1.1-3-1.6-4.5s-.9-3-1.3-4.6c-.8-3.1-1.4-6.2-1.8-9.3-.4-3.1-.7-6.3-.8-9.4 0-1.6 0-3.1.1-4.7 0-.8.1-1.6.1-2.3l.2-2.3c.3-3.1.9-6.2 1.7-9.1.8-3 1.8-5.9 3.2-8.6.2-.4.3-.7.5-1l.5-1c.4-.7.8-1.3 1.2-2 .4-.6.8-1.3 1.3-1.9l.7-.9.3-.5.4-.4c1.9-2.4 4.1-4.5 6.5-6.3s5-3.3 7.8-4.5 5.7-2 8.6-2.5c.7-.2 1.5-.2 2.2-.3.4-.1.8-.1 1.1-.1l1.1-.1c.8 0 1.5-.1 2.3-.1H102.6l1.1.1c.4 0 .8.1 1.1.1.4 0 .8.1 1.1.1l1.1.2.6.1.6.1 1.1.2c.4.1.7.2 1.1.3s.7.2 1.1.3c1.4.4 2.9.9 4.3 1.5s2.8 1.2 4.1 2c2.7 1.5 5.2 3.3 7.4 5.4l.4.4.5.3z" data-colored="true" data-fillType="sd3" data-strokeType="none" fill="#c5796d" strokeWidth="1" opacity="1" />
+                                            {faceShapes[selectedFaceShapeId]?.faceShapeSingle.map((pathObj, idx) => (
+                                                <Path key={`face-shape-${idx}`} d={pathObj.path} fill={getFillColor(pathObj.fill)} stroke="none" strokeWidth={1} opacity={1} data-fillType={pathObj.fill} data-colored="true" />
+                                            ))}
                                         </G>
                                     </G>
 
@@ -165,21 +256,29 @@ const AvatarCustomization = () => {
                                     {/* Left eye */}
                                     <G id="svga-group-eyes-left-move" transform="matrix(1,0,0,1,0,0)">
                                         <G id="svga-group-eyes-left" transform="matrix(1,0,0,1,0,0)">
+                                            {/* Left Eyesback */}
                                             <G id="svga-group-eyesback-left">
-                                                <Path id="SvgjsPath3207" d="M90.9 101.3s-.3-2.5-1-3.8-3.7-4.4-7-5c-4.9-1-9.3 1.7-9.3 1.7s0 2.4 1.5 4.1c1.4 1.7 3.9 2.6 4.9 2.7s4.6.3 6.5 0c1.3-.2 2.8-.2 3.4 0 .5.2 1 .3 1 .3z" data-colored="false" data-fillType="#ffffff" data-strokeType="none" fill="#ffffff" strokeWidth="1" opacity="1" />
+                                                {leftEyeBack.map((part, index) => (
+                                                    <Path key={`eyesback-left-${index}`} d={part.path} fill="#fff" strokeWidth="1" opacity="1" data-colored="false" data-strokeType="none" />
+                                                ))}
                                             </G>
-                                            <G id="svga-group-eyesiriswrapper-left" transform="matrix(1,0,0,1,0,0)">
-                                                <G id="svga-group-eyesiriscontrol-left" transform="matrix(1,0,0,1,0,0)">
-                                                    <G id="svga-group-eyesiris-left" transform="matrix(1,0,0,1,0,0)">
-                                                        <Path id="SvgjsPath3169" d="M82 91.5c2.7 0 4.9 2.2 4.9 4.9s-2.2 4.9-4.9 4.9-4.9-2.2-4.9-4.9 2.2-4.9 4.9-4.9z" data-colored="true" data-fillType="tone" data-strokeType="none" fill="#4e60a3" strokeWidth="1" opacity="1" />
-                                                        <Path id="SvgjsPath3170" d="M82 93.8c1.4 0 2.6 1.2 2.6 2.6S83.4 99 82 99s-2.6-1.2-2.6-2.6 1.2-2.6 2.6-2.6z" data-colored="false" data-fillType="#000000" data-strokeType="none" fill="#000000" strokeWidth="1" opacity="1" />
-                                                        <Path id="SvgjsPath3171" d="m81.3 94.3-.5-.5c-.2-.2-.4-.3-.7-.3s-.5.1-.7.3c-.2.2-.3.4-.3.7s.1.5.3.7l.5.5c.2.2.4.3.7.3.2 0 .5-.1.7-.3.4-.5.4-1 0-1.4zm2.5 4.4c.8 0 .8-1.3 0-1.3s-.9 1.3 0 1.3z" data-colored="false" data-fillType="#ffffff" data-strokeType="none" fill="#ffffff" strokeWidth="1" opacity="1" />
+
+                                            {/* Left Iris */}
+                                            <G id="svga-group-eyesiriswrapper-left">
+                                                <G id="svga-group-eyesiriscontrol-left">
+                                                    <G id="svga-group-eyesiris-left">
+                                                        {left.map((part, index) => (
+                                                            <Path key={`iris-left-${index}`} d={part.path} fill={getIrisFillColor(part.fill)} strokeWidth="1" opacity="1" data-colored={part.fill === "tone" ? "true" : "false"} data-strokeType="none" />
+                                                        ))}
                                                     </G>
                                                 </G>
                                             </G>
+
+                                            {/* Left Eyesfront */}
                                             <G id="svga-group-eyesfront-left">
-                                                <Path id="SvgjsPath3215" d="M70.73 98.03c0 6.9 4.93 12.5 11.02 12.5s11.02-5.6 11.02-12.5-4.93-12.5-11.02-12.5-11.02 5.59-11.02 12.5zm2.88-3.78s4.42-2.71 9.34-1.75c3.29.64 6.2 3.74 6.95 5.03.75 1.28 1.03 3.82 1.03 3.82s-.53-.14-1.11-.32c-.57-.18-2.05-.19-3.39.04-1.89.32-5.46.18-6.45.04-1-.14-3.49-1.07-4.92-2.75-1.41-1.69-1.45-4.11-1.45-4.11z" data-colored="true" data-fillType="tone" data-strokeType="none" data-fromskin="true" fill="#f3d4cf" strokeWidth="1" opacity="1" />
-                                                <Path id="SvgjsPath3216" d="M73.27 94.64c-.1.42-.12.84-.06 1.25-.57-.03-1.21.05-1.59.44-.14.14.01.33.18.3.3-.05.58-.2.88-.27.21-.05.42-.06.63-.05.06.21.13.42.22.63-.18.06-.35.14-.5.21-.38.17-.75.42-.99.76-.11.15.09.28.22.22.35-.16.68-.38 1.03-.55.15-.07.32-.12.49-.18.16.28.35.54.56.8-.41.24-.78.58-.9 1.03-.03.1.09.21.19.15.36-.24.65-.57.96-.88 1.11 1.22 2.67 2.16 3.92 2.57 1.88.62 3.93.72 5.89.62 1.85-.09 4.72-1.14 6.43-.21.07.04.13.02.17-.02l.03-.03c.01-.02.02-.04.02-.06 0-.01.01-.01.01-.03-.1-4.06-2.64-7.49-6.4-8.97-2.08-.82-4.37-1.02-6.58-.69-2.59.39-4.87 1.66-7.54 1.44-.23-.02-.34.3-.18.44.9.88 1.89 1.13 2.91 1.08zm.67-.07c1.99-.32 4.11-1.54 6.09-1.68 5.13-.36 10.05 3 10.7 8.24-2.39-.82-5.13-.1-7.59-.15-2.01-.04-4.14-.32-5.91-1.34-2.21-1.28-2.61-2.93-3.29-5.07z" data-colored="true" data-fillType="tone" data-strokeType="none" fill="#000000" strokeWidth="1" opacity="1" />
+                                                {leftEye.map((p, index) => (
+                                                    <Path key={`left-${index}`} d={p.path} fill="#F3D4CF" strokeWidth="1" opacity="0.3" data-fillType={p.fill} data-colored="true" data-strokeType="none" />
+                                                ))}
                                             </G>
                                         </G>
                                     </G>
@@ -187,21 +286,29 @@ const AvatarCustomization = () => {
                                     {/* Right eye */}
                                     <G id="svga-group-eyes-right-move" transform="matrix(1,0,0,1,0,0)">
                                         <G id="svga-group-eyes-right" transform="matrix(1,0,0,1,0,0)">
+                                            {/* Right Eyesback */}
                                             <G id="svga-group-eyesback-right">
-                                                <Path id="SvgjsPath3208" d="M109.1 101.3s.3-2.5 1-3.8 3.7-4.4 7-5c4.9-1 9.3 1.7 9.3 1.7s0 2.4-1.5 4.1c-1.4 1.7-3.9 2.6-4.9 2.7s-4.6.3-6.5 0c-1.3-.2-2.8-.2-3.4 0-.5.2-1 .3-1 .3z" data-colored="false" data-fillType="#ffffff" data-strokeType="none" fill="#ffffff" strokeWidth="1" opacity="1" />
+                                                {rightEyeBack.map((part, index) => (
+                                                    <Path key={`eyesback-right-${index}`} d={part.path} fill="#fff" strokeWidth="1" opacity="1" data-fillType={part.fill} data-colored="false" data-strokeType="none" />
+                                                ))}
                                             </G>
-                                            <G id="svga-group-eyesiriswrapper-right" transform="matrix(1,0,0,1,0,0)">
-                                                <G id="svga-group-eyesiriscontrol-right" transform="matrix(1,0,0,1,0,0)">
-                                                    <G id="svga-group-eyesiris-right" transform="matrix(1,0,0,1,0,0)">
-                                                        <Path id="SvgjsPath3172" d="M118 91.5c2.7 0 4.9 2.2 4.9 4.9s-2.2 4.9-4.9 4.9-4.9-2.2-4.9-4.9 2.2-4.9 4.9-4.9z" data-colored="true" data-fillType="tone" data-strokeType="none" fill="#4e60a3" strokeWidth="1" opacity="1" />
-                                                        <Path id="SvgjsPath3173" d="M118 93.8c1.4 0 2.6 1.2 2.6 2.6S119.4 99 118 99s-2.6-1.2-2.6-2.6 1.2-2.6 2.6-2.6z" data-colored="false" data-fillType="#000000" data-strokeType="none" fill="#000000" strokeWidth="1" opacity="1" />
-                                                        <Path id="SvgjsPath3174" d="m117.4 94.3-.5-.5c-.2-.2-.4-.3-.7-.3s-.5.1-.7.3c-.2.2-.3.4-.3.7s.1.5.3.7l.5.5c.2.2.4.3.7.3.2 0 .5-.1.7-.3.3-.5.4-1 0-1.4zm2.4 4.4c.8 0 .8-1.3 0-1.3s-.8 1.3 0 1.3z" data-colored="false" data-fillType="#ffffff" data-strokeType="none" fill="#ffffff" strokeWidth="1" opacity="1" />
+
+                                            {/* Right Iris */}
+                                            <G id="svga-group-eyesiriswrapper-right">
+                                                <G id="svga-group-eyesiriscontrol-right">
+                                                    <G id="svga-group-eyesiris-right">
+                                                        {right.map((part, index) => (
+                                                            <Path key={`iris-right-${index}`} d={part.path} fill={getIrisFillColor(part.fill)} strokeWidth="1" opacity="1" data-fillType={part.fill} data-colored={part.fill === "tone" ? "true" : "false"} data-strokeType="none" />
+                                                        ))}
                                                     </G>
                                                 </G>
                                             </G>
+
+                                            {/* Right Eyesfront */}
                                             <G id="svga-group-eyesfront-right">
-                                                <Path id="SvgjsPath3217" d="M118.26 85.53c-6.08 0-11.02 5.6-11.02 12.5s4.93 12.5 11.02 12.5 11.02-5.6 11.02-12.5-4.94-12.5-11.02-12.5zm6.67 12.82c-1.43 1.68-3.92 2.6-4.92 2.75-1 .14-4.56.29-6.45-.04-1.34-.23-2.82-.21-3.39-.04-.57.18-1.11.32-1.11.32s.29-2.53 1.03-3.82c.75-1.28 3.66-4.38 6.95-5.03 4.92-.96 9.34 1.75 9.34 1.75s-.03 2.43-1.45 4.11z" data-colored="true" data-fillType="tone" data-strokeType="none" data-fromskin="true" fill="#f3d4cf" strokeWidth="1" opacity="1" />
-                                                <Path id="SvgjsPath3220" d="M129.64 93.58c.15-.15.04-.46-.18-.44-2.68.22-4.96-1.05-7.54-1.44-2.21-.33-4.49-.13-6.58.69-3.76 1.48-6.31 4.91-6.4 8.97 0 .01.01.02.01.03 0 .02.01.04.02.06l.03.03c.04.04.1.06.17.02 1.71-.93 4.58.11 6.43.21 1.96.1 4.02-.01 5.89-.62 1.25-.41 2.81-1.35 3.92-2.57.31.31.6.64.96.88.1.06.22-.04.19-.15-.12-.45-.5-.79-.9-1.03.21-.26.4-.52.56-.8.17.06.34.11.49.18.35.17.68.39 1.03.55.13.06.33-.07.22-.22-.25-.34-.61-.59-.99-.76-.15-.07-.32-.15-.5-.21.09-.21.17-.42.22-.63.21 0 .42.01.63.05.3.07.58.21.88.27.17.03.31-.16.18-.3-.38-.39-1.02-.48-1.59-.44.06-.41.04-.83-.06-1.25 1.02.03 2.01-.22 2.91-1.08zm-6.87 6.06c-1.77 1.03-3.9 1.3-5.91 1.34-2.46.05-5.21-.67-7.59.15.65-5.24 5.56-8.6 10.7-8.24 1.98.14 4.1 1.36 6.09 1.68-.68 2.14-1.08 3.79-3.29 5.07z" data-colored="true" data-fillType="tone" data-strokeType="none" fill="#000000" strokeWidth="1" opacity="1" />
+                                                {rightEye.map((p, index) => (
+                                                    <Path key={`right-${index}`} d={p.path} fill="#F3D4CF" strokeWidth="1" opacity="0.3" data-fillType={p.fill} data-colored="true" data-strokeType="none" />
+                                                ))}
                                             </G>
                                         </G>
                                     </G>
@@ -262,35 +369,24 @@ const AvatarCustomization = () => {
 
                                     {/* Hair */}
                                     <G id="svga-group-hair-front" transform="matrix(1,0,0,1,0,0)">
+
                                         <G id="svga-hair">
-                                            <Path
-                                                id="SvgjsPathHair1"
-                                                d="M3 0 L0 3 Z"
-                                                data-colored="true"
-                                                fill="#472D2D"
-                                                strokeWidth="1"
-                                                opacity="1"
-                                            />
-                                            <Path
-                                                id="SvgjsPathHair2"
-                                                d="M3 0 L-0.2 3 Z"
-                                                data-colored="true"
-                                                fill="#3a353a"
-                                                strokeWidth="1"
-                                                opacity="1"
-                                            />
+                                            {hairShapes[selectedHairId]?.front.map((hairPath, idx) => (
+                                                <Path key={`hair-${idx}`} d={hairPath.path} fill={getFillColor(hairPath.fill)} stroke="none" strokeWidth={1} opacity={1} data-fillType={hairPath.fill} data-colored="true" />
+                                            ))}
                                         </G>
 
-                                        {/* Dynamic Beard */}
+
+                                        {/* <G id="svga-hair">
+                                            <Path id="SvgjsPath3302" d="M75.1 60.2s9.5 11.9 24.4 14.5c14.9 2.6 28.5 2 33.7 9.5s4.4 23.6 4.4 23.6 5.9-14.5 6.3-20c.4-5.6 1-26.1-11.9-38.6s-43-21-59-2c0 0-11.3.4-16.8 18.8s5.5 42.8 5.5 42.8S60 92 65.2 83.2c6.7-11.5 8.7-14.3 9.9-23z" data-colored="true" data-fillType="tone" data-strokeType="none" fill="#000" strokeWidth="1" opacity="1" />
+                                            <Path id="SvgjsPath3303" d="M137.2 84.7c-3.8-5.4-10.5-7.4-16.6-8.9-17.5-4.1-40.4-3.7-46.8-24.4-.1-.4-.7-.2-.6.2 2.4 13.9 17.5 19.9 29.6 22.4 14.5 3 41.7 5 35.7 26.9-.1.3.4.4.5.1 2.1-5.4 1.6-11.4-1.8-16.3zm-14-27.9c-6.1-3.4-12.9-5.5-19.9-6.2-9.4-1-18.8 1-27.6-3.5-.2-.1-.5.2-.2.4 4.9 2.8 10.4 3.3 16 3.4 7.8.1 15.2.2 22.6 2.7 13.9 4.7 26.3 15 27.2 30-3.8-10.2-14.3-14.9-24.2-17.8-13.7-4-31.1-4.4-41.7-15.1-.1-.1-.3 0-.2.2 7.3 9.2 20.1 10.2 30.8 12.8 13.3 3.2 29.4 6.7 35.1 20.7 0 .1.1.1.2.1 0 .9 0 1.9-.1 2.9 0 .3.4.3.5.1 3-13.4-7.8-24.8-18.5-30.7zM135 58c-13.2-18-38.6-22.3-58.2-13.4-.2.1 0 .5.2.4 10.4-4.8 22.2-6 33.3-2.8 9.9 2.8 17.5 8.7 24.4 16.1.2 0 .4-.1.3-.3zm-62.3-3.8c0-.2-.4-.3-.4 0 0 5.5-.4 10.8-2.4 15.9-1.6 4.2-4 7.9-6.1 11.8-3.2 6.1-5 12.3-4.1 19.2 0 .2.4.2.4-.1-.3-9.9 3.5-16.7 8-25.2 3.7-6.7 5.6-14 4.6-21.6zm-3.1-3.4C56.8 60 55.8 77.9 58.1 92.1c0 .2.3.1.3 0-1.5-15.3-.4-30 11.4-41 .1-.2-.1-.4-.2-.3zm-.1 6.7c-1.9 5.7-3.8 11.2-6.1 16.8-.1.2.2.3.3.1 2.7-5.2 5-11 6.1-16.8 0-.2-.3-.3-.3-.1z" data-colored="true" data-fillType="sd1" data-strokeType="none" fill="#1b141c" strokeWidth="1" opacity="1" />
+                                            <Path id="SvgjsPath3304" d="M121.5 73.9c-6.8-3.4-14.7-2.8-21.9-5.1-8.6-2.7-15.5-7.6-22.2-13.4-.2-.1-.4.1-.2.2 4.9 5.6 11.6 9.8 18.5 12.6 8.3 3.3 17.6 2.6 25.8 6 0 0 .1-.2 0-.3zm9.7.4c-10.4-8.1-25.3-7.2-37.7-9.8-.2 0-.2.2-.1.2 12.6 4.1 25.8 2.6 37.6 9.8.2.1.4-.1.2-.2zm-22.4-16c-10.8-.3-20-2.9-29.6-7.8-.2-.1-.4.2-.2.3 8.6 5.8 19.4 8.6 29.8 8 .4 0 .4-.5 0-.5zm15.5 5.4c-6-5.6-14-7.2-21.9-8.3-.1 0-.2.2 0 .2 7.7 1.8 15.2 3.3 21.6 8.3.3.2.5 0 .3-.2zm-4-10.8c-9.8-5.9-22.9-6.6-34.1-7.1-.2 0-.3.3-.1.4 11.6 1.9 23.1 2 33.9 7.1.3 0 .5-.3.3-.4zm-3.7-4c-6.9-4.2-15.1-6.3-23.2-5.8-.3 0-.3.4 0 .5 8.2.4 15.5 2.2 22.9 5.8.3 0 .5-.4.3-.5zm-48.9 7c-4.2 4.5-6.9 10.4-7.3 16.6 0 .2.3.2.3 0 1-6.2 3.2-11.5 7.2-16.4.1-.1-.1-.3-.2-.2zm2.3-2c-1.2 3.1-2.7 6.2-4.3 9.1-.1.1.1.2.2.1 2.1-2.8 3.5-5.8 4.4-9.2-.1-.1-.3-.1-.3 0zm.2 5.7c-1.2 5-2.5 9.6-5 14.2-1.8 3.4-3.6 6.5-4.4 10.3 0 .1.2.2.2.1 1.4-4.7 4.1-8.5 6.2-12.9 1.8-3.7 2.6-7.5 3.3-11.5 0-.3-.3-.4-.3-.2z" data-colored="true" data-fillType="hl1" data-strokeType="none" fill="#3a353a" strokeWidth="1" opacity="1" />
+                                        </G> */}
+
+                                        {/* Beard */}
                                         <G id="svga-beard">
                                             {currentBeardPaths.map((beardPath, idx) => (
-                                                <Path
-                                                    key={idx}
-                                                    d={beardPath.path}
-                                                    fill="#000000"
-                                                    strokeWidth="1"
-                                                    opacity="1"
-                                                />
+                                                <Path key={idx} d={beardPath.path} fill="#000000" strokeWidth="1" opacity="1" />
                                             ))}
                                         </G>
                                     </G>
@@ -306,7 +402,7 @@ const AvatarCustomization = () => {
                 </Svg>
             </View>
 
-            <ScrollView contentContainerStyle={{ margin: 10, padding: 10, borderWidth: 2, borderBlockColor: "#fff" }}>
+            <ScrollView contentContainerStyle={{ marginTop: 10, padding: 10, borderWidth: 2, borderBlockColor: "#fafafa" }}>
 
                 {/* 📌 Beard */}
                 <Text style={[styles.buttonHeadText]}>Beard</Text>
@@ -341,7 +437,76 @@ const AvatarCustomization = () => {
                         </View>
                     ))}
                 </View>
-            </ScrollView>
+
+                {/* 📌 Clothes */}
+                <Text style={[styles.buttonHeadText]}>Clothes</Text>
+                <View style={[styles.buttonViewOne]}>
+                    {clothesShapeIds.map((id) => (
+                        <View key={id} style={{ margin: 5, width: 90 }}>
+                            <Button
+                                title={`Dress ${id}`}
+                                onPress={() => setCurrentClothesId(id)} />
+                        </View>
+                    ))}
+                </View>
+
+                {/* 📌 Eyesfront */}
+                <Text style={[styles.buttonHeadText]}>Eyes Front</Text>
+                <View style={[styles.buttonViewOne]}>
+                    {eyesFrontShapeIds.map((id) => (
+                        <View key={id} style={{ margin: 5, width: 90 }}>
+                            <Button title={"EyeF " + id} onPress={() => setCurrentEyesId(id)} />
+                        </View>
+                    ))}
+                </View>
+
+                {/* 📌 Eyesback */}
+                <Text style={styles.buttonHeadText}>Eyes Back</Text>
+                <View style={styles.buttonViewOne}>
+                    {eyesBackShapeIds.map((id) => (
+                        <View key={id} style={{ margin: 5, width: 90 }}>
+                            <Button title={`EyeB ${id}`} onPress={() => setSelectedEyeBackId(id)} />
+                        </View>
+                    ))}
+                </View>
+
+                {/* 📌 Iris */}
+                <Text style={styles.buttonHeadText}>Iris</Text>
+                <View style={styles.buttonViewOne}>
+                    {irisShapeIds.map((id) => (
+                        <View key={id} style={{ margin: 5, width: 90 }}>
+                            <Button title={`Iris ${id}`} onPress={() => setSelectedIrisId(id)} />
+                        </View>
+                    ))}
+                </View>
+
+                {/* 📌 FaceShape */}
+                <Text style={[styles.buttonHeadText]}>Face Shape</Text>
+                <View style={[styles.buttonViewOne]}>
+                    {Object.keys(faceShapes).map((id) => (
+                        <View key={id} style={{ margin: 5, width: 100 }}>
+                            <Button
+                                title={`Face ${id}`}
+                                onPress={() => setSelectedFaceShapeId(id)}
+                            />
+                        </View>
+                    ))}
+                </View>
+
+                {/* 📌 Hair */}
+                <Text style={styles.buttonHeadText}>Hair</Text>
+                <View style={styles.buttonViewOne}>
+                    {Object.keys(hairShapes).map((id) => (
+                        <View key={id} style={{ margin: 5, width: 100 }}>
+                            <Button
+                                title={`Hair ${id}`}
+                                onPress={() => setSelectedHairId(id)}
+                            />
+                        </View>
+                    ))}
+                </View>
+
+            </ScrollView >
         </>
     );
 };
