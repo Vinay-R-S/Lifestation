@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import { View, Button, ScrollView, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Button, ScrollView, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
 import Svg, { G, Path } from "react-native-svg";
 import elementsData from "../../data/jsons/male.json";
 import { Colors, TextStyles } from '../../constants/theme';
+import { Ionicons } from '@expo/vector-icons';
+import { useGameState } from '../../context/GameStateContext';
 
 const getIrisFillColor = (fill: string) => {
     switch (fill) {
@@ -121,9 +123,52 @@ const noseShapes: NoseShapes = noseRawShapes.reduce((acc, shapeObj, index) => {
 
 const noseShapeIds = Object.keys(noseShapes);
 
+type SelectedItems = {
+    hair: string;
+    eyes: string;
+    mouth: string;
+    nose: string;
+    clothes: string;
+};
 
+type UnlockedItems = {
+    hair: string[];
+    eyes: string[];
+    mouth: string[];
+    nose: string[];
+    clothes: string[];
+    beard: string[];
+    ears: string[];
+    eyebrows: string[];
+};
+
+type ItemToUnlock = {
+    id: string;
+    category: string;
+    cost: number;
+};
 
 const AvatarCustomization = () => {
+    const { state, addCoins } = useGameState();
+    const [selectedItems, setSelectedItems] = useState<SelectedItems>({
+        hair: 'hair1',
+        eyes: 'eyes1',
+        mouth: 'mouth1',
+        nose: 'nose1',
+        clothes: 'clothes1',
+    });
+    const [unlockedItems, setUnlockedItems] = useState<UnlockedItems>({
+        hair: ['hair1'],
+        eyes: ['eyes1'],
+        mouth: ['mouth1'],
+        nose: ['nose1'],
+        clothes: ['clothes1'],
+        beard: ['beard1'],
+        ears: ['ears1'],
+        eyebrows: ['eyebrows1'],
+    });
+    const [showUnlockModal, setShowUnlockModal] = useState(false);
+    const [selectedItemToUnlock, setSelectedItemToUnlock] = useState<ItemToUnlock | null>(null);
 
     // 📌 Beard ***************************************************************************************************
     const [selectedBeardId, setSelectedBeardId] = useState(beardShapeIds[0]);
@@ -157,10 +202,347 @@ const AvatarCustomization = () => {
     const [selectedNoseId, setSelectedNoseId] = useState(noseShapeIds[0]);
     const currentNosePaths = noseShapes[selectedNoseId];
 
+    const handleUnlockItem = (category: keyof UnlockedItems, itemId: string, cost: number) => {
+        if (state.coins >= cost) {
+            addCoins(-cost);
+            setUnlockedItems(prev => ({
+                ...prev,
+                [category]: [...prev[category], itemId]
+            }));
+            setShowUnlockModal(false);
+            setSelectedItemToUnlock(null);
+        }
+    };
 
+    const isItemUnlocked = (category: keyof UnlockedItems, itemId: string) => {
+        return unlockedItems[category].includes(itemId);
+    };
+
+    const renderUnlockModal = () => {
+        if (!selectedItemToUnlock) return null;
+        
+        return (
+            <Modal
+                visible={showUnlockModal}
+                transparent={true}
+                animationType="slide"
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Unlock Item</Text>
+                        {state.coins >= selectedItemToUnlock.cost ? (
+                            <Text style={styles.modalText}>
+                                Unlock this item for {selectedItemToUnlock.cost} coins?
+                            </Text>
+                        ) : (
+                            <Text style={styles.modalwrongText}>
+                                You don't have enough coins to unlock this item.
+                            </Text>
+                        )}
+                        <View style={styles.modalButtons}>
+                            <TouchableOpacity
+                                style={styles.modalButton}
+                                onPress={() => {
+                                    handleUnlockItem(
+                                        selectedItemToUnlock.category as keyof UnlockedItems,
+                                        selectedItemToUnlock.id,
+                                        selectedItemToUnlock.cost
+                                    );
+                                }}
+                            >
+                                <Text style={styles.modalButtonText}>Unlock</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.modalButton}
+                                onPress={() => setShowUnlockModal(false)}
+                            >
+                                <Text style={styles.modalButtonText}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+        );
+    };
+
+    const renderItem = (item: any, category: string) => {
+        const isUnlocked = isItemUnlocked(category as keyof UnlockedItems, item.id);
+        const canAfford = state.coins >= item.cost;
+
+        return (
+            <TouchableOpacity
+                key={item.id}
+                style={[
+                    styles.item,
+                    selectedItems[category as keyof SelectedItems] === item.id && styles.selectedItem
+                ]}
+                onPress={() => {
+                    if (!isUnlocked) {
+                        setSelectedItemToUnlock({ id: item.id, category, cost: item.cost });
+                        setShowUnlockModal(true);
+                    } else {
+                        handleItemSelect(item.id, category as keyof SelectedItems);
+                    }
+                }}
+            >
+                {!isUnlocked && (
+                    <View style={styles.lockContainer}>
+                        <Ionicons name="lock-closed" size={24} color={Colors.primary} />
+                    </View>
+                )}
+                <Text style={styles.itemText}>{item.name}</Text>
+                {!isUnlocked && (
+                    <Text style={styles.costText}>{item.cost} coins</Text>
+                )}
+            </TouchableOpacity>
+        );
+    };
+
+    const handleItemSelect = (itemId: string, category: keyof SelectedItems) => {
+        setSelectedItems(prev => ({
+            ...prev,
+            [category]: itemId,
+        }));
+    };
+
+    const renderBeardSection = () => (
+        <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Beard</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {beardShapeIds.map((id) => (
+                    <TouchableOpacity
+                        key={id}
+                        style={[
+                            styles.itemButton,
+                            !isItemUnlocked('beard', id) && styles.lockedItem
+                        ]}
+                        onPress={() => {
+                            if (isItemUnlocked('beard', id)) {
+                                setSelectedBeardId(id);
+                            } else {
+                                setSelectedItemToUnlock({
+                                    category: 'beard',
+                                    id,
+                                    cost: 2
+                                });
+                                setShowUnlockModal(true);
+                            }
+                        }}
+                    >
+                        {!isItemUnlocked('beard', id) && (
+                            <Ionicons name="lock-closed" size={24} color="white" />
+                        )}
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+        </View>
+    );
+
+    const renderEarsSection = () => (
+        <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Ears</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {earIds.map((id) => (
+                    <TouchableOpacity
+                        key={id}
+                        style={[
+                            styles.itemButton,
+                            !isItemUnlocked('ears', `ears${id}`) && styles.lockedItem
+                        ]}
+                        onPress={() => {
+                            if (isItemUnlocked('ears', `ears${id}`)) {
+                                setSelectedEarId(id);
+                            } else {
+                                setSelectedItemToUnlock({
+                                    category: 'ears',
+                                    id: `ears${id}`,
+                                    cost: 2
+                                });
+                                setShowUnlockModal(true);
+                            }
+                        }}
+                    >
+                        {!isItemUnlocked('ears', `ears${id}`) && (
+                            <Ionicons name="lock-closed" size={24} color="white" />
+                        )}
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+        </View>
+    );
+
+    const renderEyebrowsSection = () => (
+        <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Eyebrows</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {eyebrowsIds.map((id) => (
+                    <TouchableOpacity
+                        key={id}
+                        style={[
+                            styles.itemButton,
+                            !isItemUnlocked('eyebrows', `eyebrows${id}`) && styles.lockedItem
+                        ]}
+                        onPress={() => {
+                            if (isItemUnlocked('eyebrows', `eyebrows${id}`)) {
+                                setSelectedEyebrowId(id);
+                            } else {
+                                setSelectedItemToUnlock({
+                                    category: 'eyebrows',
+                                    id: `eyebrows${id}`,
+                                    cost: 2
+                                });
+                                setShowUnlockModal(true);
+                            }
+                        }}
+                    >
+                        {!isItemUnlocked('eyebrows', `eyebrows${id}`) && (
+                            <Ionicons name="lock-closed" size={24} color="white" />
+                        )}
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+        </View>
+    );
+
+    const renderHairSection = () => (
+        <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Hair</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {Object.keys(hairShapes).map((id) => (
+                    <TouchableOpacity
+                        key={id}
+                        style={[
+                            styles.itemButton,
+                            !isItemUnlocked('hair', `hair${id}`) && styles.lockedItem
+                        ]}
+                        onPress={() => {
+                            if (isItemUnlocked('hair', `hair${id}`)) {
+                                setSelectedHairId(id);
+                            } else {
+                                setSelectedItemToUnlock({
+                                    category: 'hair',
+                                    id: `hair${id}`,
+                                    cost: 2
+                                });
+                                setShowUnlockModal(true);
+                            }
+                        }}
+                    >
+                        {!isItemUnlocked('hair', `hair${id}`) && (
+                            <Ionicons name="lock-closed" size={24} color="white" />
+                        )}
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+        </View>
+    );
+
+    const renderEyesSection = () => (
+        <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Eyes</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {irisShapeIds.map((id) => (
+                    <TouchableOpacity
+                        key={id}
+                        style={[
+                            styles.itemButton,
+                            !isItemUnlocked('eyes', `eyes${id}`) && styles.lockedItem
+                        ]}
+                        onPress={() => {
+                            if (isItemUnlocked('eyes', `eyes${id}`)) {
+                                setSelectedIrisId(id);
+                            } else {
+                                setSelectedItemToUnlock({
+                                    category: 'eyes',
+                                    id: `eyes${id}`,
+                                    cost: 2
+                                });
+                                setShowUnlockModal(true);
+                            }
+                        }}
+                    >
+                        {!isItemUnlocked('eyes', `eyes${id}`) && (
+                            <Ionicons name="lock-closed" size={24} color="white" />
+                        )}
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+        </View>
+    );
+
+    const renderNoseSection = () => (
+        <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Nose</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {noseShapeIds.map((id) => (
+                    <TouchableOpacity
+                        key={id}
+                        style={[
+                            styles.itemButton,
+                            !isItemUnlocked('nose', `nose${id}`) && styles.lockedItem
+                        ]}
+                        onPress={() => {
+                            if (isItemUnlocked('nose', `nose${id}`)) {
+                                setSelectedNoseId(id);
+                            } else {
+                                setSelectedItemToUnlock({
+                                    category: 'nose',
+                                    id: `nose${id}`,
+                                    cost: 2
+                                });
+                                setShowUnlockModal(true);
+                            }
+                        }}
+                    >
+                        {!isItemUnlocked('nose', `nose${id}`) && (
+                            <Ionicons name="lock-closed" size={24} color="white" />
+                        )}
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+        </View>
+    );
+
+    const renderClothesSection = () => (
+        <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Clothes</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {clothesShapeIds.map((id) => (
+                    <TouchableOpacity
+                        key={id}
+                        style={[
+                            styles.itemButton,
+                            !isItemUnlocked('clothes', `clothes${id}`) && styles.lockedItem
+                        ]}
+                        onPress={() => {
+                            if (isItemUnlocked('clothes', `clothes${id}`)) {
+                                setCurrentClothesId(id);
+                            } else {
+                                setSelectedItemToUnlock({
+                                    category: 'clothes',
+                                    id: `clothes${id}`,
+                                    cost: 2
+                                });
+                                setShowUnlockModal(true);
+                            }
+                        }}
+                    >
+                        {!isItemUnlocked('clothes', `clothes${id}`) && (
+                            <Ionicons name="lock-closed" size={24} color="white" />
+                        )}
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+        </View>
+    );
 
     return (
-        <>
+        <View style={styles.container}>
+            <View style={styles.coinContainer}>
+                <Ionicons name="logo-bitcoin" size={24} color="gold" />
+                <Text style={styles.coinText}>{state.coins}</Text>
+            </View>
+
             <View style={{ "width": "100%", "marginTop": 12, "marginBottom": 16, "display": "flex", "justifyContent": "center", "alignItems": "center" }}>
                 <Svg width="200" height="200" viewBox="0 0 200 200" preserveAspectRatio="xMinYMin meet">
                     {/* <Defs /> */}
@@ -378,394 +760,17 @@ const AvatarCustomization = () => {
             </View>
 
             <ScrollView contentContainerStyle={{ marginTop: 10, padding: 10, borderWidth: 2, borderBlockColor: "#fafafa" }}>
+                {renderBeardSection()}
+                {renderEarsSection()}
+                {renderEyebrowsSection()}
+                {renderHairSection()}
+                {renderEyesSection()}
+                {renderNoseSection()}
+                {renderClothesSection()}
+            </ScrollView>
 
-                {/* 📌 Beard */}
-                <Text style={[styles.buttonHeadText]}>Beard</Text>
-                <View style={[styles.buttonViewOne]}>
-                    {beardShapeIds.map((id) => {
-                        const paths = beardShapesRaw[id] || [];
-
-                        return (
-                            <View key={id} style={{ margin: 5, width: 90 }}>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        setSelectedBeardId(id);
-                                    }}
-                                    style={[
-                                        styles.innerSVG,
-                                        selectedBeardId === id && { borderColor: "#fff", borderWidth: 3 }, // Optional highlight
-                                    ]}>
-                                    <Svg width={60} height={60} viewBox="0 10 200 200">
-                                        <G id="svga-beard">
-                                            {paths.map((beardPath, idx) => (
-                                                <Path
-                                                    key={idx}
-                                                    d={beardPath.path}
-                                                    fill={beardPath.fill || "#000"}
-                                                    stroke="#000"
-                                                    strokeWidth="1"
-                                                    opacity="1"
-                                                />
-                                            ))}
-                                        </G>
-                                    </Svg>
-                                </TouchableOpacity>
-                            </View>
-                        );
-                    })}
-                </View>
-
-                {/* 📌 Ears */}
-                <Text style={[styles.buttonHeadText]}>Ears</Text>
-                <View style={[styles.buttonViewOne]}>
-                    {earIds.map((id) => {
-                        const earData = rawEarsData[id];
-
-                        return (
-                            <View key={id} style={{ margin: 5, width: 90 }}>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        setSelectedEarId(id);
-                                    }}
-                                    style={[
-                                        styles.innerSVG,
-                                        selectedEarId === id && { borderColor: "#fff", borderWidth: 3 } // Optional highlight
-                                    ]}>
-                                    <Svg width={100} height={60} viewBox="20 30 130 130">
-                                        {/* Left Ear */}
-                                        <G id="svga-group-ears-left" transform="matrix(1,0,0,1,0,0)">
-                                            {earData.left.map((shape, idx) => (
-                                                <Path
-                                                    key={`left-ear-${idx}`}
-                                                    d={shape.path}
-                                                    fill="#F3D4CF"
-                                                    stroke="#000"
-                                                    strokeWidth="1"
-                                                    opacity="1"
-                                                />
-                                            ))}
-                                        </G>
-                                        {/* Right Ear */}
-                                        <G id="svga-group-ears-right" transform="matrix(1,0,0,1,0,0)">
-                                            {earData.right.map((shape, idx) => (
-                                                <Path
-                                                    key={`right-ear-${idx}`}
-                                                    d={shape.path}
-                                                    fill="#F3D4CF"
-                                                    stroke="#000"
-                                                    strokeWidth="1"
-                                                    opacity="1"
-                                                />
-                                            ))}
-                                        </G>
-                                    </Svg>
-                                </TouchableOpacity>
-                            </View>
-                        );
-                    })}
-                </View>
-
-                {/* 📌 Eye brows */}
-                <Text style={[styles.buttonHeadText]}>Eyebrows</Text>
-                <View style={[styles.buttonViewOne]}>
-                    {eyebrowsIds.map((_, id) => {
-                        const eyebrowData = rawEyebrowData[id];
-
-                        return (
-                            <View key={id} style={{ margin: 5, width: 90 }}>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        setSelectedEyebrowId(id);
-                                    }}
-                                    style={[
-                                        styles.innerSVG,
-                                        selectedEyebrowId === id && { borderColor: "#fff", borderWidth: 3 } // Optional active border
-                                    ]}>
-                                    <Svg width={60} height={60} viewBox="40 20 120 100">
-                                        {/* Left Eyebrow */}
-                                        <G id="svga-group-eyebrows-left">
-                                            {eyebrowData.left.map((shape, index) => (
-                                                <Path
-                                                    key={`eyebrow-left-${index}`}
-                                                    d={shape.path}
-                                                    fill={shape.fill || "#000"}
-                                                    stroke="#000"
-                                                    strokeWidth="1"
-                                                    opacity="1"
-                                                />
-                                            ))}
-                                        </G>
-
-                                        {/* Right Eyebrow */}
-                                        <G id="svga-group-eyebrows-right">
-                                            {eyebrowData.right.map((shape, index) => (
-                                                <Path
-                                                    key={`eyebrow-right-${index}`}
-                                                    d={shape.path}
-                                                    fill={shape.fill || "#000"}
-                                                    stroke="#000"
-                                                    strokeWidth="1"
-                                                    opacity="1"
-                                                />
-                                            ))}
-                                        </G>
-                                    </Svg>
-                                </TouchableOpacity>
-                            </View>
-                        );
-                    })}
-                </View>
-
-                {/* 📌 Clothes */}
-                <Text style={[styles.buttonHeadText]}>Clothes</Text>
-                <View style={[styles.buttonViewOne]}>
-                    {clothesShapeIds.map((id) => {
-                        const paths = clothesShapesRaw[id]; // ✅ get SVG path array for this ID
-
-                        return (
-                            <View key={id} style={{ margin: 5, width: 90 }}>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        setCurrentClothesId(id);
-                                    }}
-                                    style={[
-                                        styles.innerSVG,
-                                        currentClothesId === id && { borderColor: "#fff", borderWidth: 3 } // Optional active border
-                                    ]}>
-
-                                    <Svg width={60} height={60} viewBox="0 50 200 220">
-                                        <G id="svga-group-clothes-single">
-                                            {paths.map((pathObj, index) => (
-                                                <Path
-                                                    key={index}
-                                                    d={pathObj.path}
-                                                    fill={pathObj.fill}
-                                                    strokeWidth="1"
-                                                    opacity="1"
-                                                    data-filltype={pathObj.fill}
-                                                    data-colored="true"
-                                                />
-                                            ))}
-                                        </G>
-                                    </Svg>
-                                </TouchableOpacity>
-                            </View>
-                        );
-                    })}
-                </View>
-
-                {/* 📌 Eyesback */}
-                <Text style={[styles.buttonHeadText]}>Eyes Back</Text>
-                <View style={styles.buttonViewOne}>
-                    {eyesBackShapeIds.map((id) => {
-                        const { leftEyeBack, rightEyeBack } = eyesBackShapes[id];
-
-                        return (
-                            <View key={id} style={{ margin: 5, width: 90 }}>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        setSelectedEyeBackId(id);
-                                    }}
-                                    style={[
-                                        styles.innerSVG,
-                                        selectedEyeBackId === id && { borderColor: "#fff", borderWidth: 3 }
-                                    ]}>
-                                    <Svg width={60} height={60} viewBox="60 50 80 80">
-                                        <G id={`eyesback-preview-${id}`}>
-                                            {leftEyeBack.map((part, index) => (
-                                                <Path
-                                                    key={`leftEyeBack-${index}`}
-                                                    d={part.path}
-                                                    fill="#fff"
-                                                    strokeWidth="1"
-                                                    opacity="1"
-                                                    data-filltype={part.fill}
-                                                    data-colored="false"
-                                                />
-                                            ))}
-                                            {rightEyeBack.map((part, index) => (
-                                                <Path
-                                                    key={`rightEyeBack-${index}`}
-                                                    d={part.path}
-                                                    fill="#fff"
-                                                    strokeWidth="1"
-                                                    opacity="1"
-                                                    data-filltype={part.fill}
-                                                    data-colored="false"
-                                                />
-                                            ))}
-                                        </G>
-                                    </Svg>
-                                </TouchableOpacity>
-                            </View>
-                        );
-                    })}
-                </View>
-
-                {/* 📌 Iris */}
-                <Text style={styles.buttonHeadText}>Iris</Text>
-                <View style={styles.buttonViewOne}>
-                    {irisShapeIds.map((id) => {
-                        const { left, right } = irisShapes[id];
-
-                        return (
-                            <View key={id} style={{ margin: 5, width: 90 }}>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        setSelectedIrisId(id);
-                                    }}
-                                    style={[
-                                        styles.innerSVG,
-                                        selectedIrisId === id && { borderColor: "#fff", borderWidth: 3 }
-                                    ]}
-                                >
-                                    <Svg width={60} height={60} viewBox="70 60 60 60">
-                                        <G id={`iris-preview-${id}`}>
-                                            {/* Left Iris */}
-                                            {left.map((part, index) => (
-                                                <Path
-                                                    key={`left-${index}`}
-                                                    d={part.path}
-                                                    fill={getIrisFillColor(part.fill)}
-                                                    strokeWidth="1"
-                                                    opacity="1"
-                                                    data-filltype={part.fill}
-                                                    data-colored={part.fill === "tone" ? "true" : "false"}
-                                                />
-                                            ))}
-                                            {/* Right Iris */}
-                                            {right.map((part, index) => (
-                                                <Path
-                                                    key={`right-${index}`}
-                                                    d={part.path}
-                                                    fill={getIrisFillColor(part.fill)}
-                                                    strokeWidth="1"
-                                                    opacity="1"
-                                                    data-filltype={part.fill}
-                                                    data-colored={part.fill === "tone" ? "true" : "false"}
-                                                />
-                                            ))}
-                                        </G>
-                                    </Svg>
-                                </TouchableOpacity>
-                            </View>
-                        );
-                    })}
-                </View>
-
-                {/* 📌 FaceShape */}
-                <Text style={[styles.buttonHeadText]}>Face Shape</Text>
-                <View style={[styles.buttonViewOne]}>
-                    {faceShapeIds.map((id) => {
-                        const shapeData = faceShapes[id].faceShapeSingle;
-
-                        return (
-                            <View key={id} style={{ margin: 5, width: 100 }}>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        setSelectedFaceShapeId(id);
-                                    }}
-                                    style={[
-                                        styles.innerSVG,
-                                        selectedFaceShapeId === id && { borderColor: "#fff", borderWidth: 3 }
-                                    ]}
-                                >
-                                    <Svg width={60} height={60} viewBox="0 0 180 160">
-                                        <G id={`face-preview-${id}`}>
-                                            {shapeData.map((pathObj, idx) => (
-                                                <Path
-                                                    key={`face-${id}-${idx}`}
-                                                    d={pathObj.path}
-                                                    fill="#F3D4CF"
-                                                    stroke="none"
-                                                    strokeWidth={1}
-                                                    opacity={1}
-                                                    data-filltype="#F3D4CF"
-                                                    data-colored="true"
-                                                />
-                                            ))}
-                                        </G>
-                                    </Svg>
-                                </TouchableOpacity>
-                            </View>
-                        );
-                    })}
-                </View>
-
-                {/* 📌 Hair */}
-                <Text style={[styles.buttonHeadText]}>Hair</Text>
-                <View style={[styles.buttonViewOne]}>
-                    {Object.keys(hairShapes).map((id) => {
-                        const hairData = hairShapes[id];
-
-                        return (
-                            <View key={id} style={{ margin: 5, width: 100 }}>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        setSelectedHairId(id);
-                                    }}
-                                    style={[
-                                        styles.innerSVG,
-                                        selectedHairId === id && { borderColor: "#fff", borderWidth: 3 } // Optional highlight
-                                    ]}>
-                                    <Svg width={60} height={60} viewBox="0 10 180 120">
-                                        <G id={`hair-preview-${id}`}>
-                                            {hairData.front.map((hairPath, idx) => (
-                                                <Path
-                                                    key={`hair-${id}-${idx}`}
-                                                    d={hairPath.path}
-                                                    fill={getFillColor(hairPath.fill)}
-                                                    stroke="none"
-                                                    strokeWidth={1}
-                                                    opacity={1}
-                                                    data-filltype={hairPath.fill}
-                                                    data-colored="true"
-                                                />
-                                            ))}
-                                        </G>
-                                    </Svg>
-                                </TouchableOpacity>
-                            </View>
-                        );
-                    })}
-                </View>
-
-                {/* 📌 Nose */}
-                <Text style={[styles.buttonHeadText]}>Nose</Text>
-                <View style={[styles.buttonViewOne]}>
-                    {noseShapeIds.map((id) => {
-                        const paths = noseShapes[id];
-
-                        return (
-                            <View key={id} style={{ margin: 5, width: 90 }}>
-                                <TouchableOpacity
-                                    onPress={() => setSelectedNoseId(id)}
-                                    style={[
-                                        styles.innerSVG,
-                                        selectedNoseId === id && { borderColor: "#fff", borderWidth: 3 },
-                                    ]}
-                                >
-                                    <Svg width={60} height={60} viewBox="50 50 100 100">
-                                        <G id="svga-group-nose-preview">
-                                            {paths.map((part, index) => (
-                                                <Path
-                                                    key={`nose-preview-${index}`}
-                                                    d={part.path}
-                                                    fill={part.fill === "tone" ? "#F3D4CF" : part.fill}
-                                                    strokeWidth="1"
-                                                    opacity="1"
-                                                />
-                                            ))}
-                                        </G>
-                                    </Svg>
-                                </TouchableOpacity>
-                            </View>
-                        );
-                    })}
-                </View>
-
-            </ScrollView >
-        </>
+            {renderUnlockModal()}
+        </View>
     );
 };
 
@@ -807,5 +812,104 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10
+    },
+    coinContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+        backgroundColor: Colors.background,
+    },
+    coinText: {
+        marginLeft: 5,
+        fontSize: 18,
+        color: 'gold',
+    },
+    sectionContainer: {
+        marginBottom: 20,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        color: Colors.textPrimary,
+    },
+    itemButton: {
+        width: 60,
+        height: 60,
+        marginRight: 10,
+        borderRadius: 30,
+        backgroundColor: Colors.primary,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    lockedItem: {
+        backgroundColor: Colors.secondary,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    modalContent: {
+        backgroundColor: Colors.background,
+        padding: 20,
+        borderRadius: 10,
+        width: '80%',
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        color: Colors.textPrimary,
+    },
+    modalText: {
+        fontSize: 16,
+        marginBottom: 20,
+        color: Colors.textPrimary,
+    },
+    modalwrongText: {
+        fontSize: 16,
+        marginBottom: 20,
+        color: 'red',
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+    },
+    modalButton: {
+        padding: 10,
+        backgroundColor: Colors.primary,
+        borderRadius: 5,
+    },
+    modalButtonText: {
+        color: 'white',
+        fontSize: 16,
+    },
+    item: {
+        padding: 10,
+        margin: 5,
+        borderRadius: 5,
+        backgroundColor: Colors.background,
+        alignItems: 'center',
+    },
+    selectedItem: {
+        backgroundColor: Colors.primary,
+    },
+    lockContainer: {
+        position: 'absolute',
+        top: 5,
+        right: 5,
+    },
+    itemText: {
+        color: Colors.textPrimary,
+        fontSize: 16,
+        fontFamily: 'Arial',
+    },
+    costText: {
+        color: Colors.primary,
+        fontSize: 14,
+        fontFamily: 'Arial',
+        marginTop: 5,
     },
 });
