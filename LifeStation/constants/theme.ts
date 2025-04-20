@@ -58,8 +58,8 @@ export const Colors = {
     title: {
       fontFamily: Fonts.bold,
       fontSize: 24,
-      color: Colors.textPrimary,
-      fontWeight: 'bold',
+      color: 'black',
+      
     },
     subtitle: {
       fontFamily: Fonts.bold,

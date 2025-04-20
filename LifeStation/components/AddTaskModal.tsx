@@ -93,13 +93,13 @@ export default function AddTaskModal({ visible, onClose, onAdd }: AddTaskModalPr
                         style={[styles.typeButton, newTask.type === 'todo' && styles.selectedType]}
                         onPress={() => setNewTask({ ...newTask, type: 'todo' })}
                         testID="type-todo">
-                        <Text style={styles.typeText}>Todo Task</Text>
+                        <Text style={[styles.typeText, newTask.type === 'todo' && styles.selectedText]}>Todo Task</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={[styles.typeButton, newTask.type === 'progress' && styles.selectedType]}
                         onPress={() => setNewTask({ ...newTask, type: 'progress' })}
                         testID="type-progress">
-                        <Text style={styles.typeText}>Habit Task</Text>
+                        <Text style={[styles.typeText, newTask.type === 'progress' && styles.selectedText]}>Habit Task</Text>
                       </TouchableOpacity>
                     </View>
                 </View>
@@ -198,7 +198,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: Colors.textPrimary, // instead of Colors.textSecondary
     fontFamily: Fonts.bold,
-  },  
+  },
+  selectedText: {
+    color: 'black',
+  },
   addButton: {
     backgroundColor: Colors.success,
     paddingVertical: 16,
@@ -210,5 +213,6 @@ const styles = StyleSheet.create({
     color: Colors.background,
     fontSize: 16,
     fontFamily: Fonts.fancy,
+    fontWeight: 'bold',
   },
 });

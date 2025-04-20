@@ -153,10 +153,6 @@ const AvatarCustomization = () => {
     const { state, addCoins } = useGameState();
     const [selectedItems, setSelectedItems] = useState<SelectedItems>({
         hair: 'hair1',
-        beard: 'beard1',
-        ears: 'ears1',
-        eyebrows: 'eyebrows1',
-        face: 'face1',
         eyes: 'eyes1',
         mouth: 'mouth1',
         nose: 'nose1',
