@@ -44,13 +44,15 @@ export default function TabLayout() {
           color: Colors.textPrimary,
         },
       }}>
-      
+
       <Tabs.Screen
         name="avatar"
         options={{
           title: 'Avatar',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="face-man-profile" size={size} color={color} />
+            // <MaterialCommunityIcons name="face-man-profile" size={size} color={color} />
+            // <FontAwesome5 name="portrait" size={size} color={color} />
+            <FontAwesome5 name="user-circle" size={size} color={color} />
           ),
           headerTitle: 'My Avatar',
         }}
@@ -72,9 +74,22 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="user-astronaut" size={size} color={color} />
+            // <FontAwesome5 name="user-astronaut" size={size} color={color} />
+            // <FontAwesome5 name="user-alt" size={size} color={color} />
+            <FontAwesome5 name="id-card" size={size} color={color} />
           ),
           headerTitle: 'Player Profile',
+        }}
+      />
+
+      <Tabs.Screen
+        name="avatar-customization"
+        options={{
+          title: 'Customization',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="user-edit" size={size} color={color} />
+          ),
+          headerTitle: 'Avatar Customization',
         }}
       />
     </Tabs>

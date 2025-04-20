@@ -393,7 +393,7 @@ const AvatarCustomization = () => {
                                     }}
                                     style={[
                                         styles.innerSVG,
-                                        selectedBeardId === id && { borderColor: "yellow", borderWidth: 2 }, // Optional highlight
+                                        selectedBeardId === id && { borderColor: "#fff", borderWidth: 3 }, // Optional highlight
                                     ]}>
                                     <Svg width={60} height={60} viewBox="0 10 200 200">
                                         <G id="svga-beard">
@@ -429,9 +429,9 @@ const AvatarCustomization = () => {
                                     }}
                                     style={[
                                         styles.innerSVG,
-                                        selectedEarId === id && { borderColor: "yellow", borderWidth: 2 } // Optional highlight
+                                        selectedEarId === id && { borderColor: "#fff", borderWidth: 3 } // Optional highlight
                                     ]}>
-                                    <Svg width={100} height={60} viewBox="20 20 130 130">
+                                    <Svg width={100} height={60} viewBox="20 30 130 130">
                                         {/* Left Ear */}
                                         <G id="svga-group-ears-left" transform="matrix(1,0,0,1,0,0)">
                                             {earData.left.map((shape, idx) => (
@@ -479,7 +479,7 @@ const AvatarCustomization = () => {
                                     }}
                                     style={[
                                         styles.innerSVG,
-                                        selectedEyebrowId === id && { borderColor: "yellow", borderWidth: 2 } // Optional active border
+                                        selectedEyebrowId === id && { borderColor: "#fff", borderWidth: 3 } // Optional active border
                                     ]}>
                                     <Svg width={60} height={60} viewBox="40 20 120 100">
                                         {/* Left Eyebrow */}
@@ -530,7 +530,7 @@ const AvatarCustomization = () => {
                                     }}
                                     style={[
                                         styles.innerSVG,
-                                        currentClothesId === id && { borderColor: "yellow", borderWidth: 2 } // Optional active border
+                                        currentClothesId === id && { borderColor: "#fff", borderWidth: 3 } // Optional active border
                                     ]}>
 
                                     <Svg width={60} height={60} viewBox="0 50 200 220">
@@ -568,7 +568,7 @@ const AvatarCustomization = () => {
                                     }}
                                     style={[
                                         styles.innerSVG,
-                                        selectedEyeBackId === id && { borderColor: "yellow", borderWidth: 2 }
+                                        selectedEyeBackId === id && { borderColor: "#fff", borderWidth: 3 }
                                     ]}>
                                     <Svg width={60} height={60} viewBox="60 50 80 80">
                                         <G id={`eyesback-preview-${id}`}>
@@ -616,7 +616,7 @@ const AvatarCustomization = () => {
                                     }}
                                     style={[
                                         styles.innerSVG,
-                                        selectedIrisId === id && { borderColor: "yellow", borderWidth: 2 }
+                                        selectedIrisId === id && { borderColor: "#fff", borderWidth: 3 }
                                     ]}
                                 >
                                     <Svg width={60} height={60} viewBox="70 60 60 60">
@@ -667,7 +667,7 @@ const AvatarCustomization = () => {
                                     }}
                                     style={[
                                         styles.innerSVG,
-                                        selectedFaceShapeId === id && { borderColor: "yellow", borderWidth: 2 }
+                                        selectedFaceShapeId === id && { borderColor: "#fff", borderWidth: 3 }
                                     ]}
                                 >
                                     <Svg width={60} height={60} viewBox="0 0 180 160">
@@ -706,7 +706,7 @@ const AvatarCustomization = () => {
                                     }}
                                     style={[
                                         styles.innerSVG,
-                                        selectedHairId === id && { borderColor: "yellow", borderWidth: 2 } // Optional highlight
+                                        selectedHairId === id && { borderColor: "#fff", borderWidth: 3 } // Optional highlight
                                     ]}>
                                     <Svg width={60} height={60} viewBox="0 10 180 120">
                                         <G id={`hair-preview-${id}`}>
@@ -729,7 +729,7 @@ const AvatarCustomization = () => {
                         );
                     })}
                 </View>
-                
+
                 {/* 📌 Nose */}
                 <Text style={[styles.buttonHeadText]}>Nose</Text>
                 <View style={[styles.buttonViewOne]}>
@@ -742,7 +742,7 @@ const AvatarCustomization = () => {
                                     onPress={() => setSelectedNoseId(id)}
                                     style={[
                                         styles.innerSVG,
-                                        selectedNoseId === id && { borderColor: "yellow", borderWidth: 2 },
+                                        selectedNoseId === id && { borderColor: "#fff", borderWidth: 3 },
                                     ]}
                                 >
                                     <Svg width={60} height={60} viewBox="50 50 100 100">
@@ -775,36 +775,37 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#0A0D1A', // Apply dark theme background color here
-      },
-      content: {
+    },
+    content: {
         flex: 1,
-      },
-      text: {
+    },
+    text: {
         color: Colors.textPrimary, // Set text color from theme
         fontSize: 18,
         fontFamily: 'SpaceMono-Regular',
-      },
+    },
     buttonHeadText: {
-      ...TextStyles.heading,
-      fontSize: 20,
-      width: '100%',
-      marginTop: 5,
-      marginBottom: 5,
-      color: Colors.textPrimary,
+        fontSize: 20,
+        width: '100%',
+        marginTop: 5,
+        marginBottom: 5,
+        color: Colors.textPrimary,
+        textAlign: "center"
     },
     buttonViewOne: {
-      width: '100%',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'center',
-      marginBottom: 20,
+        width: '100%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        marginBottom: 20,
     },
     innerSVG: {
-      borderWidth: 2,
-      borderColor: Colors.textPrimary,
-      backgroundColor: Colors.surface,
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
+        borderWidth: 2,
+        borderColor: Colors.textPrimary,
+        backgroundColor: "#888",
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10
     },
-  });
+});
