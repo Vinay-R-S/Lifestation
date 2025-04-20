@@ -441,7 +441,7 @@ const AvatarCustomization = () => {
                         }}
                     >
                         <View style={{ backgroundColor: '#888', padding: 5 }}>
-                        <Svg width={60} height={60} viewBox="40 20 120 100">
+                        <Svg width={80} height={80} viewBox="40 20 120 100">
                             <G id={`eyebrows-preview-${id}`}>
                                 {rawEyebrowData[id].left.map((shape, index) => (
                                     <Path
