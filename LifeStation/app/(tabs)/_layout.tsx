@@ -50,8 +50,6 @@ export default function TabLayout() {
         options={{
           title: 'Avatar',
           tabBarIcon: ({ color, size }) => (
-            // <MaterialCommunityIcons name="face-man-profile" size={size} color={color} />
-            // <FontAwesome5 name="portrait" size={size} color={color} />
             <FontAwesome5 name="user-circle" size={size} color={color} />
           ),
           headerTitle: 'My Avatar',
@@ -74,8 +72,6 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            // <FontAwesome5 name="user-astronaut" size={size} color={color} />
-            // <FontAwesome5 name="user-alt" size={size} color={color} />
             <FontAwesome5 name="id-card" size={size} color={color} />
           ),
           headerTitle: 'Player Profile',
