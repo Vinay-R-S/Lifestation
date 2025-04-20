@@ -329,8 +329,25 @@ const AvatarCustomization = () => {
                             }
                         }}
                     >
+                        <View style={{ backgroundColor: '#888', padding: 5 }}>
+                        <Svg width={90} height={90} viewBox="0 0 200 200">
+                            <G id={`beard-preview-${id}`}>
+                                {beardShapesRaw[id].map((beardPath, idx) => (
+                                    <Path
+                                        key={`beard-${id}-${idx}`}
+                                        d={beardPath.path}
+                                        fill="#000000"
+                                        strokeWidth="1"
+                                        opacity="1"
+                                    />
+                                ))}
+                            </G>
+                        </Svg>
+                        </View>
                         {!isItemUnlocked('beard', id) && (
-                            <Ionicons name="lock-closed" size={24} color="white" />
+                            <View style={styles.lockOverlay}>
+                                <Ionicons name="lock-closed" size={24} color="white" />
+                            </View>
                         )}
                     </TouchableOpacity>
                 ))}
@@ -362,8 +379,36 @@ const AvatarCustomization = () => {
                             }
                         }}
                     >
+                        <View style={{ backgroundColor: '#888', padding: 5 }}>
+                        <Svg width={90} height={90} viewBox="30 30 130 130">
+                            <G id={`ears-preview-${id}`}>
+                                {rawEarsData[id].left.map((shape, idx) => (
+                                    <Path
+                                        key={`left-ear-${idx}`}
+                                        d={shape.path}
+                                        fill="#F3D4CF"
+                                        stroke="#000"
+                                        strokeWidth="1"
+                                        opacity="1"
+                                    />
+                                ))}
+                                {rawEarsData[id].right.map((shape, idx) => (
+                                    <Path
+                                        key={`right-ear-${idx}`}
+                                        d={shape.path}
+                                        fill="#F3D4CF"
+                                        stroke="#000"
+                                        strokeWidth="1"
+                                        opacity="1"
+                                    />
+                                ))}
+                            </G>
+                        </Svg>
+                        </View>
                         {!isItemUnlocked('ears', `ears${id}`) && (
-                            <Ionicons name="lock-closed" size={24} color="white" />
+                            <View style={styles.lockOverlay}>
+                                <Ionicons name="lock-closed" size={24} color="white" />
+                            </View>
                         )}
                     </TouchableOpacity>
                 ))}
@@ -395,8 +440,36 @@ const AvatarCustomization = () => {
                             }
                         }}
                     >
+                        <View style={{ backgroundColor: '#888', padding: 5 }}>
+                        <Svg width={60} height={60} viewBox="40 20 120 100">
+                            <G id={`eyebrows-preview-${id}`}>
+                                {rawEyebrowData[id].left.map((shape, index) => (
+                                    <Path
+                                        key={`eyebrow-left-${index}`}
+                                        d={shape.path}
+                                        fill="#000"
+                                        stroke="#000"
+                                        strokeWidth="1"
+                                        opacity="1"
+                                    />
+                                ))}
+                                {rawEyebrowData[id].right.map((shape, index) => (
+                                    <Path
+                                        key={`eyebrow-right-${index}`}
+                                        d={shape.path}
+                                        fill="#000"
+                                        stroke="#000"
+                                        strokeWidth="1"
+                                        opacity="1"
+                                    />
+                                ))}
+                            </G>
+                        </Svg>
+                        </View>
                         {!isItemUnlocked('eyebrows', `eyebrows${id}`) && (
-                            <Ionicons name="lock-closed" size={24} color="white" />
+                            <View style={styles.lockOverlay}>
+                                <Ionicons name="lock-closed" size={24} color="white" />
+                            </View>
                         )}
                     </TouchableOpacity>
                 ))}
@@ -428,8 +501,26 @@ const AvatarCustomization = () => {
                             }
                         }}
                     >
+                        <View style={{ backgroundColor: '#888', padding: 5 }}>
+                            <Svg width={80} height={80} viewBox="0 0 200 200">
+                                <G id={`hair-preview-${id}`}>
+                                    {hairShapes[id]?.front.map((hairPath, idx) => (
+                                        <Path
+                                            key={`hair-${idx}`}
+                                            d={hairPath.path}
+                                            fill={getFillColor(hairPath.fill)}
+                                            stroke="none"
+                                            strokeWidth={1}
+                                            opacity={1}
+                                        />
+                                    ))}
+                                </G>
+                            </Svg>
+                        </View>
                         {!isItemUnlocked('hair', `hair${id}`) && (
-                            <Ionicons name="lock-closed" size={24} color="white" />
+                            <View style={styles.lockOverlay}>
+                                <Ionicons name="lock-closed" size={24} color="white" />
+                            </View>
                         )}
                     </TouchableOpacity>
                 ))}
@@ -461,8 +552,35 @@ const AvatarCustomization = () => {
                             }
                         }}
                     >
+                        <View style={{ backgroundColor: '#888', padding: 5 }}>
+                    
+                        <Svg width={250} height={250} viewBox="0 0 200 200">
+                            <G id={`eyes-preview-${id}`}>
+                                {irisShapes[id].left.map((part, idx) => (
+                                    <Path
+                                        key={`left-eye-${idx}`}
+                                        d={part.path}
+                                        fill={getIrisFillColor(part.fill)}
+                                        strokeWidth="1"
+                                        opacity="1"
+                                    />
+                                ))}
+                                {irisShapes[id].right.map((part, idx) => (
+                                    <Path
+                                        key={`right-eye-${idx}`}
+                                        d={part.path}
+                                        fill={getIrisFillColor(part.fill)}
+                                        strokeWidth="1"
+                                        opacity="1"
+                                    />
+                                ))}
+                            </G>
+                        </Svg>
+                        </View>
                         {!isItemUnlocked('eyes', `eyes${id}`) && (
-                            <Ionicons name="lock-closed" size={24} color="white" />
+                            <View style={styles.lockOverlay}>
+                                <Ionicons name="lock-closed" size={24} color="white" />
+                            </View>
                         )}
                     </TouchableOpacity>
                 ))}
@@ -494,8 +612,25 @@ const AvatarCustomization = () => {
                             }
                         }}
                     >
+                        <View style={{ backgroundColor: '#888', padding: 5 }}>
+                        <Svg width={220} height={220} viewBox="0 0 200 200">
+                            <G id={`nose-preview-${id}`}>
+                                {noseShapes[id].map((part, idx) => (
+                                    <Path
+                                        key={`nose-path-${idx}`}
+                                        d={part.path}
+                                        fill={part.fill === "tone" ? "#F3D4CF" : part.fill}
+                                        strokeWidth="1"
+                                        opacity="1"
+                                    />
+                                ))}
+                            </G>
+                        </Svg>
+                        </View>
                         {!isItemUnlocked('nose', `nose${id}`) && (
-                            <Ionicons name="lock-closed" size={24} color="white" />
+                            <View style={styles.lockOverlay}>
+                                <Ionicons name="lock-closed" size={24} color="white" />
+                            </View>
                         )}
                     </TouchableOpacity>
                 ))}
@@ -527,8 +662,25 @@ const AvatarCustomization = () => {
                             }
                         }}
                     >
+                        <View style={{ backgroundColor: '#888', padding: 5 }}>
+                            <Svg width={80} height={70} viewBox="0 30 200 190">
+                                <G id={`clothes-preview-${id}`}>
+                                    {clothesShapesRaw[id].map((pathObj, idx) => (
+                                        <Path
+                                            key={`clothes-${idx}`}
+                                            d={pathObj.path}
+                                            fill={pathObj.fill}
+                                            strokeWidth="1"
+                                            opacity="1"
+                                        />
+                                    ))}
+                                </G>
+                            </Svg>
+                        </View>
                         {!isItemUnlocked('clothes', `clothes${id}`) && (
-                            <Ionicons name="lock-closed" size={24} color="white" />
+                            <View style={styles.lockOverlay}>
+                                <Ionicons name="lock-closed" size={24} color="white" />
+                            </View>
                         )}
                     </TouchableOpacity>
                 ))}
@@ -834,16 +986,17 @@ const styles = StyleSheet.create({
         color: Colors.textPrimary,
     },
     itemButton: {
-        width: 60,
-        height: 60,
+        width: 80,
+        height: 80,
         marginRight: 10,
-        borderRadius: 30,
-        backgroundColor: Colors.primary,
+        borderRadius: 40,
+        backgroundColor: 'transparent',
         justifyContent: 'center',
         alignItems: 'center',
+        overflow: 'hidden',
     },
     lockedItem: {
-        backgroundColor: Colors.secondary,
+        opacity: 0.5,
     },
     modalContainer: {
         flex: 1,
@@ -911,5 +1064,15 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontFamily: 'Arial',
         marginTop: 5,
+    },
+    lockOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
