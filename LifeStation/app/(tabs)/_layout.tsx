@@ -45,14 +45,14 @@ export default function TabLayout() {
         },
       }}>
 
-      <Tabs.Screen
-        name="avatar"
+<Tabs.Screen
+        name="avatar-customization"
         options={{
-          title: 'Avatar',
+          title: 'Customization',
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="user-circle" size={size} color={color} />
+            <FontAwesome5 name="user-edit" size={size} color={color} />
           ),
-          headerTitle: 'My Avatar',
+          headerTitle: 'Avatar Customization',
         }}
       />
 
@@ -78,16 +78,7 @@ export default function TabLayout() {
         }}
       />
 
-      <Tabs.Screen
-        name="avatar-customization"
-        options={{
-          title: 'Customization',
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="user-edit" size={size} color={color} />
-          ),
-          headerTitle: 'Avatar Customization',
-        }}
-      />
+    
     </Tabs>
   );
 }
