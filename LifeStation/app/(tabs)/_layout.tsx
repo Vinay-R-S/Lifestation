@@ -48,11 +48,11 @@ export default function TabLayout() {
 <Tabs.Screen
         name="avatar-customization"
         options={{
-          title: 'Customization',
+          title: 'Avatar',
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="user-edit" size={size} color={color} />
           ),
-          headerTitle: 'Avatar Customization',
+          headerTitle: 'Avatar',
         }}
       />
 

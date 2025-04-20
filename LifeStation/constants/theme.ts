@@ -59,13 +59,13 @@ export const Colors = {
       fontFamily: Fonts.bold,
       fontSize: 24,
       color: Colors.textPrimary,
-      fontWeight: 'normal',
+      fontWeight: 'bold',
     },
     subtitle: {
       fontFamily: Fonts.bold,
       fontSize: 18,
       color: Colors.textSecondary,
-      fontWeight: 'normal',
+      fontWeight: '600',
     },
     body: {
       fontFamily: Fonts.regular,
