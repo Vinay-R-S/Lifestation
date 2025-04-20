@@ -1,6 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  Modal,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors, Fonts } from '@/constants/theme';
 
 interface Task {
   id: string;
@@ -36,33 +46,18 @@ export default function AddTaskModal({ visible, onClose, onAdd }: AddTaskModalPr
   };
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-    >
-      <TouchableOpacity 
-        style={styles.modalOverlay} 
-        activeOpacity={1} 
-        onPress={onClose}
-      >
-        <KeyboardAvoidingView 
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <Modal animationType="slide" transparent visible={visible} onRequestClose={onClose}>
+      <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.keyboardView}
         >
-          <TouchableOpacity 
-            activeOpacity={1} 
-            onPress={e => e.stopPropagation()}
-          >
+          <TouchableOpacity activeOpacity={1} onPress={(e) => e.stopPropagation()}>
             <View style={styles.modalContent}>
               <View style={styles.header}>
                 <Text style={styles.modalTitle}>Add New Task</Text>
-                <TouchableOpacity
-                  style={styles.closeButton}
-                  onPress={onClose}
-                >
-                  <Ionicons name="close" size={24} color="#FEDC32" />
+                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                  <Ionicons name="close" size={24} color={Colors.yellow} />
                 </TouchableOpacity>
               </View>
 
@@ -74,8 +69,8 @@ export default function AddTaskModal({ visible, onClose, onAdd }: AddTaskModalPr
                     placeholder="Enter task title"
                     value={newTask.title}
                     onChangeText={(text) => setNewTask({ ...newTask, title: text })}
-                    placeholderTextColor="#999999"
-                    autoFocus={true}
+                    placeholderTextColor={Colors.textMuted}
+                    autoFocus
                   />
                 </View>
 
@@ -86,32 +81,24 @@ export default function AddTaskModal({ visible, onClose, onAdd }: AddTaskModalPr
                     placeholder="Enter deadline"
                     value={newTask.deadline}
                     onChangeText={(text) => setNewTask({ ...newTask, deadline: text })}
-                    placeholderTextColor="#999999"
+                    placeholderTextColor={Colors.textMuted}
                   />
                 </View>
 
                 <View style={styles.inputContainer}>
                   <Text style={styles.inputLabel}>Task Type</Text>
-                  <View style={styles.typeSelector}>
-                    <TouchableOpacity
-                      style={[
-                        styles.typeButton,
-                        newTask.type === 'todo' && styles.selectedType,
-                      ]}
-                      onPress={() => setNewTask({ ...newTask, type: 'todo' })}
-                    >
-                      <Text style={styles.typeText}>Todo Task</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[
-                        styles.typeButton,
-                        newTask.type === 'progress' && styles.selectedType,
-                      ]}
-                      onPress={() => setNewTask({ ...newTask, type: 'progress' })}
-                    >
-                      <Text style={styles.typeText}>Habit Task</Text>
-                    </TouchableOpacity>
-                  </View>
+                    <View style={styles.typeSelector}>
+                      <TouchableOpacity
+                        style={[styles.typeButton, newTask.type === 'todo' && styles.selectedType]}
+                        onPress={() => setNewTask({ ...newTask, type: 'todo' })}>
+                        <Text style={styles.typeText}>Todo Task</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.typeButton, newTask.type === 'progress' && styles.selectedType]}
+                        onPress={() => setNewTask({ ...newTask, type: 'progress' })}>
+                        <Text style={styles.typeText}>Habit Task</Text>
+                      </TouchableOpacity>
+                    </View>
                 </View>
 
                 <TouchableOpacity style={styles.addButton} onPress={handleAddTask}>
@@ -129,26 +116,23 @@ export default function AddTaskModal({ visible, onClose, onAdd }: AddTaskModalPr
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'center',
+    paddingHorizontal: 16,
   },
   keyboardView: {
     flex: 1,
     justifyContent: 'center',
   },
   modalContent: {
-    backgroundColor: '#352722',
-    margin: 20,
-    borderRadius: 8,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    backgroundColor: Colors.surface,
+    borderRadius: 16,
+    padding: 24,
+    shadowColor: Colors.overlay,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
+    elevation: 14,
   },
   header: {
     flexDirection: 'row',
@@ -157,34 +141,34 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   modalTitle: {
-    color: '#FEDC32',
-    fontSize: 20,
-    fontWeight: 'bold',
+    color: Colors.yellow,
+    fontSize: 22,
+    fontFamily: Fonts.fancy,
   },
   closeButton: {
-    padding: 5,
+    padding: 8,
   },
   form: {
-    gap: 15,
+    gap: 18,
   },
   inputContainer: {
-    marginBottom: 15,
+    marginBottom: 14,
   },
   inputLabel: {
-    color: '#FEDC32',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
+    color: Colors.textMuted,
+    fontSize: 15,
+    fontFamily: Fonts.bold,
+    marginBottom: 6,
   },
   input: {
-    backgroundColor: '#FFFFFF',
-    padding: 12,
-    borderRadius: 8,
-    color: '#000000',
+    backgroundColor: Colors.background,
+    padding: 14,
+    borderRadius: 10,
     fontSize: 16,
+    fontFamily: Fonts.regular,
+    color: Colors.textPrimary,
     borderWidth: 1,
-    borderColor: '#F7A721',
-    height: 48,
+    borderColor: Colors.border,
   },
   typeSelector: {
     flexDirection: 'row',
@@ -192,28 +176,36 @@ const styles = StyleSheet.create({
   },
   typeButton: {
     flex: 1,
-    padding: 12,
-    backgroundColor: '#9A1C22',
-    borderRadius: 8,
+    paddingVertical: 14,
+    backgroundColor: Colors.background, // NEW: use a deep neutral from your theme
+    borderRadius: 10,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border, // Optional: adds outline
   },
   selectedType: {
-    backgroundColor: '#E3263B',
+    backgroundColor: Colors.secondary,
+    shadowColor: Colors.overlay,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 6,
   },
   typeText: {
-    color: '#FEDC32',
-    fontSize: 16,
-  },
+    fontSize: 15,
+    color: Colors.textPrimary, // instead of Colors.textSecondary
+    fontFamily: Fonts.bold,
+  },  
   addButton: {
-    backgroundColor: '#F7A721',
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: Colors.success,
+    paddingVertical: 16,
+    borderRadius: 12,
     alignItems: 'center',
-    marginTop: 5,
+    marginTop: 18,
   },
   addButtonText: {
-    color: '#352722',
+    color: Colors.background,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: Fonts.fancy,
   },
-}); 
+});

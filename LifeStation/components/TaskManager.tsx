@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity, Text, ScrollView, Animated } from '
 import { Ionicons } from '@expo/vector-icons';
 import AddTaskModal from './AddTaskModal';
 import { useGameState } from '../context/GameStateContext';
+import { Colors, Fonts } from '../constants/theme';
 
 interface ProgressUpdate {
   date: string;
@@ -25,9 +26,8 @@ export default function TaskManager() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const taskAnimations = useRef<{ [key: string]: Animated.Value }>({});
-  const { addCoins, deductHealth, updateLastProgress, updateHabitStreak, state } = useGameState();
+  const { addCoins, deductHealth, updateLastProgress, updateHabitStreak } = useGameState();
 
-  // Check for missed deadlines and progress
   useEffect(() => {
     const checkMissedTasks = () => {
       const now = new Date();
@@ -50,7 +50,7 @@ export default function TaskManager() {
       });
     };
 
-    const interval = setInterval(checkMissedTasks, 1000 * 60 * 60); // Check every hour
+    const interval = setInterval(checkMissedTasks, 1000 * 60 * 60);
     return () => clearInterval(interval);
   }, [tasks, deductHealth]);
 
@@ -73,52 +73,35 @@ export default function TaskManager() {
     if (!task) return;
 
     if (!task.completed) {
-      // Initialize animation value if it doesn't exist
       if (!taskAnimations.current[taskId]) {
         taskAnimations.current[taskId] = new Animated.Value(0);
       }
 
-      // First mark the task as completed
-      setTasks(tasks.map(t => 
-        t.id === taskId ? { ...t, completed: true } : t
-      ));
-
-      // Add coins based on whether it's a habit
+      setTasks(tasks.map(t => t.id === taskId ? { ...t, completed: true } : t));
       const coinReward = task.isHabit ? 1 : 0.5;
       addCoins(coinReward);
+      if (task.isHabit) updateHabitStreak(taskId, true);
 
-      // Update habit streak
-      if (task.isHabit) {
-        updateHabitStreak(taskId, true);
-      }
-
-      // Then start the slide-out animation
-      Animated.parallel([
-        Animated.timing(taskAnimations.current[taskId], {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ]).start(() => {
-        // Remove the task after animation completes
-        setTasks(prevTasks => prevTasks.filter(t => t.id !== taskId));
+      Animated.timing(taskAnimations.current[taskId], {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start(() => {
+        setTasks(prev => prev.filter(t => t.id !== taskId));
         delete taskAnimations.current[taskId];
       });
     } else {
-      setTasks(tasks.map(task => 
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      ));
+      setTasks(tasks.map(task => task.id === taskId ? { ...task, completed: !task.completed } : task));
     }
   };
 
   const checkForHabit = (task: Task) => {
     if (!task.progressHistory || task.isHabit) return false;
-    
+
     const today = new Date();
     const startDate = new Date(task.startDate!);
     const daysDifference = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    
-    // Check if task has been done for 21 consecutive days
+
     if (daysDifference >= 21) {
       const last21Days = new Set();
       task.progressHistory.forEach(update => {
@@ -127,7 +110,6 @@ export default function TaskManager() {
           last21Days.add(updateDate.toDateString());
         }
       });
-      
       return last21Days.size >= 21;
     }
     return false;
@@ -136,10 +118,7 @@ export default function TaskManager() {
   const updateProgress = (taskId: string, increment: boolean) => {
     setTasks(tasks.map(task => {
       if (task.id === taskId && task.type === 'progress') {
-        const newProgress = (task.progress || 0) + (increment ? 1 : -1);
-        const updatedProgress = Math.max(0, newProgress);
-        
-        // Add progress update to history
+        const updatedProgress = Math.max(0, (task.progress || 0) + (increment ? 1 : -1));
         const newHistory = [...(task.progressHistory || []), {
           date: new Date().toISOString(),
           value: updatedProgress
@@ -151,7 +130,6 @@ export default function TaskManager() {
           progressHistory: newHistory
         });
 
-        // Handle rewards/penalties
         if (increment) {
           const coinReward = task.isHabit ? 0.4 : 0.2;
           addCoins(coinReward);
@@ -160,7 +138,6 @@ export default function TaskManager() {
           addCoins(-0.1);
         }
 
-        // Update last progress date
         updateLastProgress(taskId);
 
         return {
@@ -179,45 +156,42 @@ export default function TaskManager() {
       <ScrollView style={styles.taskList}>
         {tasks.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Ionicons name="document-text-outline" size={64} color="#F7A721" />
-            <Text style={styles.emptyText}>No tasks yet</Text>
-            <Text style={styles.emptySubtext}>Tap the + button to add a new task</Text>
+            <Ionicons name="document-text-outline" size={64} color={Colors.accent} />
+            <Text style={[styles.emptyText, Fonts.header]}>No tasks yet</Text>
+            <Text style={[styles.emptySubtext, Fonts.body]}>Tap the + button to add a new task</Text>
           </View>
         ) : (
           tasks.map(task => {
-            const slideAnimation = taskAnimations.current[task.id]?.interpolate({
+            const slide = taskAnimations.current[task.id]?.interpolate({
               inputRange: [0, 1],
               outputRange: [0, -500],
             });
 
-            const fadeAnimation = taskAnimations.current[task.id]?.interpolate({
+            const fade = taskAnimations.current[task.id]?.interpolate({
               inputRange: [0, 1],
               outputRange: [1, 0],
             });
 
             return (
               <Animated.View 
-                key={task.id} 
+                key={task.id}
                 style={[
                   styles.taskItem,
-                  {
-                    transform: [{ translateX: slideAnimation || 0 }],
-                    opacity: fadeAnimation || 1,
-                  }
+                  { transform: [{ translateX: slide || 0 }], opacity: fade || 1 }
                 ]}
               >
                 <View style={styles.taskInfo}>
                   <View style={styles.titleContainer}>
-                    <Text style={styles.taskTitle}>{task.title}</Text>
+                    <Text style={[styles.taskTitle, Fonts.header]}>{task.title}</Text>
                     {task.isHabit && (
                       <View style={styles.habitBadge}>
-                        <Ionicons name="star" size={16} color="#FEDC32" />
-                        <Text style={styles.habitText}>Habit</Text>
+                        <Ionicons name="star" size={16} color={Colors.yellow} />
+                        <Text style={[styles.habitText, Fonts.body]}>Habit</Text>
                       </View>
                     )}
                   </View>
                   {task.deadline && (
-                    <Text style={styles.deadline}>Due: {task.deadline}</Text>
+                    <Text style={[styles.deadline, Fonts.body]}>Due: {task.deadline}</Text>
                   )}
                 </View>
                 {task.type === 'todo' ? (
@@ -225,7 +199,7 @@ export default function TaskManager() {
                     style={styles.checkbox}
                     onPress={() => toggleTaskCompletion(task.id)}
                   >
-                    {task.completed && <Ionicons name="checkmark" size={24} color="#E3263B" />}
+                    {task.completed && <Ionicons name="checkmark" size={24} color={Colors.textPrimary} />}
                   </TouchableOpacity>
                 ) : (
                   <View style={styles.progressControls}>
@@ -235,7 +209,7 @@ export default function TaskManager() {
                     >
                       <Text style={styles.progressButtonText}>-</Text>
                     </TouchableOpacity>
-                    <Text style={styles.progressText}>{task.progress || 0}</Text>
+                    <Text style={[styles.progressText, Fonts.body]}>{task.progress || 0}</Text>
                     <TouchableOpacity
                       style={styles.progressButton}
                       onPress={() => updateProgress(task.id, true)}
@@ -267,13 +241,13 @@ export default function TaskManager() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#352722',
+    backgroundColor: Colors.background,
   },
   taskList: {
     flex: 1,
   },
   taskItem: {
-    backgroundColor: '#9A1C22',
+    backgroundColor: Colors.textSecondary,
     padding: 15,
     borderRadius: 8,
     marginBottom: 10,
@@ -290,34 +264,29 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   taskTitle: {
-    color: '#FEDC32',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: Colors.yellow,
   },
   habitBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#E3263B',
+    backgroundColor: Colors.textPrimary,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
     gap: 4,
   },
   habitText: {
-    color: '#FEDC32',
-    fontSize: 12,
-    fontWeight: 'bold',
+    color: Colors.yellow,
   },
   deadline: {
-    color: '#F7A721',
-    fontSize: 12,
+    color: Colors.accent,
     marginTop: 4,
   },
   checkbox: {
     width: 24,
     height: 24,
     borderWidth: 2,
-    borderColor: '#FEDC32',
+    borderColor: Colors.yellow,
     borderRadius: 4,
     justifyContent: 'center',
     alignItems: 'center',
@@ -327,7 +296,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressButton: {
-    backgroundColor: '#E3263B',
+    backgroundColor: Colors.textPrimary,
     width: 30,
     height: 30,
     borderRadius: 15,
@@ -336,20 +305,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   progressButtonText: {
-    color: '#FEDC32',
+    color: Colors.yellow,
     fontSize: 20,
     fontWeight: 'bold',
   },
   progressText: {
-    color: '#FEDC32',
-    fontSize: 16,
+    color: Colors.yellow,
     marginHorizontal: 10,
   },
   floatingButton: {
     position: 'absolute',
     bottom: 20,
     right: 20,
-    backgroundColor: '#F7A721',
+    backgroundColor: Colors.accent,
     width: 56,
     height: 56,
     borderRadius: 28,
@@ -364,14 +332,11 @@ const styles = StyleSheet.create({
     paddingTop: 100,
   },
   emptyText: {
-    color: '#FEDC32',
-    fontSize: 20,
-    fontWeight: 'bold',
+    color: Colors.yellow,
     marginTop: 16,
   },
   emptySubtext: {
-    color: '#F7A721',
-    fontSize: 14,
+    color: Colors.accent,
     marginTop: 8,
   },
-}); 
+});

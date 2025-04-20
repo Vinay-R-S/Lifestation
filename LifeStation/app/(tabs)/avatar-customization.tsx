@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Button, ScrollView, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Svg, { G, Path } from "react-native-svg";
 import elementsData from "../../data/jsons/male.json";
+import { Colors, TextStyles } from '../../constants/theme';
 
 const getIrisFillColor = (fill: string) => {
     switch (fill) {
@@ -771,28 +772,39 @@ const AvatarCustomization = () => {
 export default AvatarCustomization;
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#0A0D1A', // Apply dark theme background color here
+      },
+      content: {
+        flex: 1,
+      },
+      text: {
+        color: Colors.textPrimary, // Set text color from theme
+        fontSize: 18,
+        fontFamily: 'SpaceMono-Regular',
+      },
     buttonHeadText: {
-        fontSize: 20,
-        width: "100%",
-        color: "#fff",
-        textAlign: "center",
-        marginTop: 5,
-        marginBottom: 5
+      ...TextStyles.heading,
+      fontSize: 20,
+      width: '100%',
+      marginTop: 5,
+      marginBottom: 5,
+      color: Colors.textPrimary,
     },
     buttonViewOne: {
-        width: "100%",
-        height: "auto",
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "center",
-        marginBottom: 20
+      width: '100%',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      marginBottom: 20,
     },
     innerSVG: {
-        borderWidth: 2,
-        borderColor: "white",
-        backgroundColor: "#888",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
-    }
-});
+      borderWidth: 2,
+      borderColor: Colors.textPrimary,
+      backgroundColor: Colors.surface,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  });

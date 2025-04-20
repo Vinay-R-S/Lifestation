@@ -1,11 +1,12 @@
 import { View, Text, StyleSheet } from 'react-native';
-import AvatarSVG from "../../components/Avatar/avatar";
+import AvatarSVG from '../../components/Avatar/avatar';
+import { Colors, TextStyles } from '../../constants/theme';
 
 export default function AvatarScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Avatar Screen</Text>
-      <AvatarSVG/>
+      <Text style={TextStyles.title}>Avatar Screen</Text>
+      <AvatarSVG />
     </View>
   );
 }
@@ -15,11 +16,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#352722',
+    backgroundColor: Colors.background,
   },
-  text: {
-    color: '#FEDC32',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-}); 
+});

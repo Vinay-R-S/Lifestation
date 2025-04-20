@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useGameState } from '../context/GameStateContext';
+import { Colors } from '../constants/theme'; // Assuming your theme file path
 
 export default function GameStats() {
   const { state } = useGameState();
@@ -64,7 +65,7 @@ export default function GameStats() {
 
   const healthBarColor = healthAnimation.interpolate({
     inputRange: [0, 30, 60, 100],
-    outputRange: ['#FF0000', '#FF6B00', '#FFA500', '#4CAF50'],
+    outputRange: ['#FF4E4E', '#FF9F45', '#FFD166', Colors.accent], // transitioning to your accent color
   });
 
   return (
@@ -72,7 +73,7 @@ export default function GameStats() {
       <View style={styles.statContainer}>
         <View style={styles.healthContainer}>
           <View style={styles.healthHeader}>
-            <Ionicons name="heart" size={24} color="#E3263B" />
+            <Ionicons name="heart" size={24} color={Colors.accent} />
             <Text style={styles.healthText}>{Math.round(state.health)}%</Text>
           </View>
           <View style={styles.healthBarContainer}>
@@ -89,10 +90,10 @@ export default function GameStats() {
         </View>
       </View>
 
-      <View style={styles.coinContainer}>
-        <Ionicons name="logo-bitcoin" size={24} color="#F7A721" />
+      <Animated.View style={[styles.coinContainer, { transform: [{ scale: coinAnimation }] }]}>
+        <Ionicons name="logo-bitcoin" size={24} color={Colors.accent} />
         <Text style={styles.coinText}>{state.coins}</Text>
-      </View>
+      </Animated.View>
     </View>
   );
 }
@@ -103,7 +104,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#352722',
+    backgroundColor: Colors.background,
   },
   statContainer: {
     flex: 1,
@@ -118,37 +119,37 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     gap: 8,
   },
+  healthText: {
+    color: Colors.textPrimary,
+    fontSize: 16,
+    fontFamily: 'Orbitron-Bold',
+  },
   healthBarContainer: {
     height: 12,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: Colors.surface,
     borderRadius: 6,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#444',
+    borderColor: Colors.overlay,
   },
   healthBar: {
     height: '100%',
     borderRadius: 6,
   },
-  healthText: {
-    color: '#FEDC32',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   coinContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: Colors.surface,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#444',
+    borderColor: Colors.overlay,
   },
   coinText: {
-    color: '#FEDC32',
+    color: Colors.accent,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Orbitron-Bold',
   },
-}); 
+});

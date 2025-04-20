@@ -1,12 +1,9 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Colors, Fonts } from '../../constants/theme';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
@@ -16,50 +13,68 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: '#352722',
-          borderTopColor: '#9A1C22',
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
+          backgroundColor: Colors.tabBackground,
+          borderTopColor: Colors.border,
+          height: 70,
+          paddingBottom: Platform.OS === 'ios' ? 20 : 10,
+          paddingTop: 10,
+          borderTopWidth: 1,
         },
-        tabBarActiveTintColor: '#FEDC32',
-        tabBarInactiveTintColor: '#F7A721',
+        tabBarActiveTintColor: Colors.primary,
+        tabBarInactiveTintColor: Colors.textMuted,
+        tabBarLabelStyle: {
+          fontFamily: Fonts.bold,
+          fontWeight: '700',
+          fontSize: 12,
+        },
         headerStyle: {
-          backgroundColor: '#352722',
+          backgroundColor: Colors.background,
+          shadowColor: Colors.overlay,
+          shadowOpacity: 0.8,
+          shadowRadius: 10,
+          elevation: 0,
         },
-        headerTintColor: '#FEDC32',
+        headerTintColor: Colors.primary,
         headerTitleStyle: {
-          fontWeight: 'bold',
+          fontFamily: Fonts.bold,
+          fontSize: 20,
+          textShadowColor: Colors.overlay,
+          textShadowOffset: { width: 1, height: 1 },
+          textShadowRadius: 5,
+          color: Colors.textPrimary,
         },
       }}>
+      
       <Tabs.Screen
         name="avatar"
         options={{
           title: 'Avatar',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+            <MaterialCommunityIcons name="face-man-profile" size={size} color={color} />
           ),
           headerTitle: 'My Avatar',
         }}
       />
+
       <Tabs.Screen
         name="tasks"
         options={{
           title: 'Tasks',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="list" size={size} color={color} />
+            <Feather name="check-square" size={size} color={color} />
           ),
-          headerTitle: 'My Tasks',
+          headerTitle: 'My Quests',
         }}
       />
+
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings" size={size} color={color} />
+            <FontAwesome5 name="user-astronaut" size={size} color={color} />
           ),
-          headerTitle: 'My Profile',
+          headerTitle: 'Player Profile',
         }}
       />
     </Tabs>
