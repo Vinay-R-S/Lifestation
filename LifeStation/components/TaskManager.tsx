@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity, Text, ScrollView, Animated } from '
 import { Ionicons } from '@expo/vector-icons';
 import AddTaskModal from './AddTaskModal';
 import { useGameState } from '../context/GameStateContext';
-import { Colors, Fonts } from '../constants/theme';
+import { Colors, TextStyles } from '../constants/theme';
 
 interface ProgressUpdate {
   date: string;
@@ -157,8 +157,8 @@ export default function TaskManager() {
         {tasks.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Ionicons name="document-text-outline" size={64} color={Colors.accent} />
-            <Text style={[styles.emptyText, Fonts.header]}>No tasks yet</Text>
-            <Text style={[styles.emptySubtext, Fonts.body]}>Tap the + button to add a new task</Text>
+            <Text style={[styles.emptyText, TextStyles.header]}>No tasks yet</Text>
+            <Text style={[styles.emptySubtext, TextStyles.body]}>Tap the + button to add a new task</Text>
           </View>
         ) : (
           tasks.map(task => {
@@ -175,6 +175,7 @@ export default function TaskManager() {
             return (
               <Animated.View 
                 key={task.id}
+                testID={`task-${task.id}`}
                 style={[
                   styles.taskItem,
                   { transform: [{ translateX: slide || 0 }], opacity: fade || 1 }
@@ -182,22 +183,23 @@ export default function TaskManager() {
               >
                 <View style={styles.taskInfo}>
                   <View style={styles.titleContainer}>
-                    <Text style={[styles.taskTitle, Fonts.header]}>{task.title}</Text>
+                    <Text style={[styles.taskTitle, TextStyles.header]}>{task.title}</Text>
                     {task.isHabit && (
                       <View style={styles.habitBadge}>
                         <Ionicons name="star" size={16} color={Colors.yellow} />
-                        <Text style={[styles.habitText, Fonts.body]}>Habit</Text>
+                        <Text style={[styles.habitText, TextStyles.body]}>Habit</Text>
                       </View>
                     )}
                   </View>
                   {task.deadline && (
-                    <Text style={[styles.deadline, Fonts.body]}>Due: {task.deadline}</Text>
+                    <Text style={[styles.deadline, TextStyles.body]}>Due: {task.deadline}</Text>
                   )}
                 </View>
                 {task.type === 'todo' ? (
                   <TouchableOpacity
                     style={styles.checkbox}
                     onPress={() => toggleTaskCompletion(task.id)}
+                    testID={`checkbox-${task.id}`}
                   >
                     {task.completed && <Ionicons name="checkmark" size={24} color={Colors.textPrimary} />}
                   </TouchableOpacity>
@@ -206,13 +208,15 @@ export default function TaskManager() {
                     <TouchableOpacity
                       style={styles.progressButton}
                       onPress={() => updateProgress(task.id, false)}
+                      testID={`decrement-${task.id}`}
                     >
                       <Text style={styles.progressButtonText}>-</Text>
                     </TouchableOpacity>
-                    <Text style={[styles.progressText, Fonts.body]}>{task.progress || 0}</Text>
+                    <Text style={[styles.progressText, TextStyles.body]}>{task.progress || 0}</Text>
                     <TouchableOpacity
                       style={styles.progressButton}
                       onPress={() => updateProgress(task.id, true)}
+                      testID={`increment-${task.id}`}
                     >
                       <Text style={styles.progressButtonText}>+</Text>
                     </TouchableOpacity>
@@ -226,6 +230,7 @@ export default function TaskManager() {
       <TouchableOpacity
         style={styles.floatingButton}
         onPress={() => setModalVisible(true)}
+        testID="add-task-button"
       >
         <Ionicons name="add" size={24} color="white" />
       </TouchableOpacity>
@@ -306,7 +311,7 @@ const styles = StyleSheet.create({
   },
   progressButtonText: {
     color: Colors.yellow,
-    fontSize: 20,
+    TextStylesize: 20,
     fontWeight: 'bold',
   },
   progressText: {
