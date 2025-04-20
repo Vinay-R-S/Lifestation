@@ -82,6 +82,7 @@ export default function AddTaskModal({ visible, onClose, onAdd }: AddTaskModalPr
                     value={newTask.deadline}
                     onChangeText={(text) => setNewTask({ ...newTask, deadline: text })}
                     placeholderTextColor={Colors.textMuted}
+                    testID="input-deadline"
                   />
                 </View>
 
@@ -90,18 +91,20 @@ export default function AddTaskModal({ visible, onClose, onAdd }: AddTaskModalPr
                     <View style={styles.typeSelector}>
                       <TouchableOpacity
                         style={[styles.typeButton, newTask.type === 'todo' && styles.selectedType]}
-                        onPress={() => setNewTask({ ...newTask, type: 'todo' })}>
+                        onPress={() => setNewTask({ ...newTask, type: 'todo' })}
+                        testID="type-todo">
                         <Text style={styles.typeText}>Todo Task</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={[styles.typeButton, newTask.type === 'progress' && styles.selectedType]}
-                        onPress={() => setNewTask({ ...newTask, type: 'progress' })}>
+                        onPress={() => setNewTask({ ...newTask, type: 'progress' })}
+                        testID="type-progress">
                         <Text style={styles.typeText}>Habit Task</Text>
                       </TouchableOpacity>
                     </View>
                 </View>
 
-                <TouchableOpacity style={styles.addButton} onPress={handleAddTask}>
+                <TouchableOpacity style={styles.addButton} onPress={handleAddTask} testID="submit-task">
                   <Text style={styles.addButtonText}>Add Task</Text>
                 </TouchableOpacity>
               </View>
