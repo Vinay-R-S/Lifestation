@@ -13,6 +13,7 @@ interface GameState {
   profile: {
     name: string;
     avatar: string;
+    gender?: string;
   };
   totalStreak: number;
 }
@@ -40,6 +41,7 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
     profile: {
       name: 'Guest',
       avatar: 'default_avatar.png',
+      gender: 'unspecified',
     },
     totalStreak: 0,
   });

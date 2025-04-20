@@ -15,7 +15,7 @@ export function ThemedText({
   type = 'default',
   ...rest
 }: ThemedTextProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'textPrimary');
 
   return (
     <Text
@@ -41,16 +41,16 @@ const styles = StyleSheet.create({
   defaultSemiBold: {
     fontSize: 16,
     lineHeight: 24,
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
   title: {
     fontSize: 32,
-    fontWeight: '600',
+    fontWeight: 'bold',
     lineHeight: 32,
   },
   subtitle: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
   link: {
     lineHeight: 30,
