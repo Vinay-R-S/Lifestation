@@ -140,6 +140,7 @@ type UnlockedItems = {
     beard: string[];
     ears: string[];
     eyebrows: string[];
+    face: string[];
 };
 
 type ItemToUnlock = {
@@ -152,6 +153,10 @@ const AvatarCustomization = () => {
     const { state, addCoins } = useGameState();
     const [selectedItems, setSelectedItems] = useState<SelectedItems>({
         hair: 'hair1',
+        beard: 'beard1',
+        ears: 'ears1',
+        eyebrows: 'eyebrows1',
+        face: 'face1',
         eyes: 'eyes1',
         mouth: 'mouth1',
         nose: 'nose1',
@@ -162,10 +167,11 @@ const AvatarCustomization = () => {
         eyes: ['eyes1'],
         mouth: ['mouth1'],
         nose: ['nose1'],
-        clothes: ['clothes1'],
-        beard: ['beard1'],
-        ears: ['ears1'],
-        eyebrows: ['eyebrows1'],
+        clothes: ['clothes0'],
+        beard: ['beard0'],
+        ears: ['ears0'],
+        eyebrows: ['eyebrows0'],
+        face: ['face1'],
     });
     const [showUnlockModal, setShowUnlockModal] = useState(false);
     const [selectedItemToUnlock, setSelectedItemToUnlock] = useState<ItemToUnlock | null>(null);
@@ -220,8 +226,8 @@ const AvatarCustomization = () => {
 
     const renderUnlockModal = () => {
         if (!selectedItemToUnlock) return null;
-        
-        return (
+
+    return (
             <Modal
                 visible={showUnlockModal}
                 transparent={true}
@@ -305,24 +311,24 @@ const AvatarCustomization = () => {
         }));
     };
 
-    const renderBeardSection = () => (
+    const renderFaceShapeSection = () => (
         <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Beard</Text>
+            <Text style={styles.sectionTitle}>Face Shape</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {beardShapeIds.map((id) => (
+                {faceShapeIds.map((id) => (
                     <TouchableOpacity
                         key={id}
                         style={[
                             styles.itemButton,
-                            !isItemUnlocked('beard', id) && styles.lockedItem
+                            !isItemUnlocked('face', `face${id}`) && styles.lockedItem
                         ]}
                         onPress={() => {
-                            if (isItemUnlocked('beard', id)) {
-                                setSelectedBeardId(id);
+                            if (isItemUnlocked('face', `face${id}`)) {
+                                setSelectedFaceShapeId(id);
                             } else {
                                 setSelectedItemToUnlock({
-                                    category: 'beard',
-                                    id,
+                                    category: 'face',
+                                    id: `face${id}`,
                                     cost: 2
                                 });
                                 setShowUnlockModal(true);
@@ -330,27 +336,81 @@ const AvatarCustomization = () => {
                         }}
                     >
                         <View style={{ backgroundColor: '#888', padding: 5 }}>
-                        <Svg width={90} height={90} viewBox="0 0 200 200">
-                            <G id={`beard-preview-${id}`}>
-                                {beardShapesRaw[id].map((beardPath, idx) => (
-                                    <Path
-                                        key={`beard-${id}-${idx}`}
-                                        d={beardPath.path}
-                                        fill="#000000"
-                                        strokeWidth="1"
-                                        opacity="1"
-                                    />
-                                ))}
-                            </G>
-                        </Svg>
+                            <Svg width={80} height={80} viewBox="0 0 200 200">
+                                <G id={`face-preview-${id}`}>
+                                    {faceShapes[id]?.faceShapeSingle.map((pathObj, idx) => (
+                                        <Path
+                                            key={`face-shape-${idx}`}
+                                            d={pathObj.path}
+                                            fill={getFillColor(pathObj.fill)}
+                                            stroke="none"
+                                            strokeWidth={1}
+                                            opacity={1}
+                                        />
+                                    ))}
+                                </G>
+                            </Svg>
                         </View>
-                        {!isItemUnlocked('beard', id) && (
+                        {!isItemUnlocked('face', `face${id}`) && (
                             <View style={styles.lockOverlay}>
                                 <Ionicons name="lock-closed" size={24} color="white" />
                             </View>
                         )}
                     </TouchableOpacity>
                 ))}
+            </ScrollView>
+        </View>
+    );
+
+    const renderBeardSection = () => (
+        <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Beard</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {beardShapeIds.map((id) => {
+                    const isUnlocked = id === 'beard1' || unlockedItems.beard.includes(id);
+                    return (
+                        <TouchableOpacity
+                            key={id}
+                            style={[
+                                styles.itemButton,
+                                !isUnlocked && styles.lockedItem
+                            ]}
+                            onPress={() => {
+                                if (isUnlocked) {
+                                    setSelectedBeardId(id);
+                                } else {
+                                    setSelectedItemToUnlock({
+                                        category: 'beard',
+                                        id,
+                                        cost: 2
+                                    });
+                                    setShowUnlockModal(true);
+                                }
+                            }}
+                        >
+                            <View style={{ backgroundColor: '#888', padding: 5 }}>
+                                <Svg width={90} height={90} viewBox="0 0 200 200">
+                                    <G id={`beard-preview-${id}`}>
+                                        {beardShapesRaw[id].map((beardPath, idx) => (
+                                            <Path
+                                                key={`beard-${id}-${idx}`}
+                                                d={beardPath.path}
+                                                fill="#000000"
+                                                strokeWidth="1"
+                                                opacity="1"
+                                            />
+                                        ))}
+                                    </G>
+                                </Svg>
+                            </View>
+                            {!isUnlocked && (
+                                <View style={styles.lockOverlay}>
+                                    <Ionicons name="lock-closed" size={24} color="white" />
+                                </View>
+                            )}
+                        </TouchableOpacity>
+                    );
+                })}
             </ScrollView>
         </View>
     );
@@ -359,59 +419,62 @@ const AvatarCustomization = () => {
         <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Ears</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {earIds.map((id) => (
-                    <TouchableOpacity
-                        key={id}
-                        style={[
-                            styles.itemButton,
-                            !isItemUnlocked('ears', `ears${id}`) && styles.lockedItem
-                        ]}
-                        onPress={() => {
-                            if (isItemUnlocked('ears', `ears${id}`)) {
-                                setSelectedEarId(id);
-                            } else {
-                                setSelectedItemToUnlock({
-                                    category: 'ears',
-                                    id: `ears${id}`,
-                                    cost: 2
-                                });
-                                setShowUnlockModal(true);
-                            }
-                        }}
-                    >
-                        <View style={{ backgroundColor: '#888', padding: 5 }}>
-                        <Svg width={90} height={90} viewBox="30 30 130 130">
-                            <G id={`ears-preview-${id}`}>
-                                {rawEarsData[id].left.map((shape, idx) => (
-                                    <Path
-                                        key={`left-ear-${idx}`}
-                                        d={shape.path}
-                                        fill="#F3D4CF"
-                                        stroke="#000"
-                                        strokeWidth="1"
-                                        opacity="1"
-                                    />
-                                ))}
-                                {rawEarsData[id].right.map((shape, idx) => (
-                                    <Path
-                                        key={`right-ear-${idx}`}
-                                        d={shape.path}
-                                        fill="#F3D4CF"
-                                        stroke="#000"
-                                        strokeWidth="1"
-                                        opacity="1"
-                                    />
-                                ))}
-                            </G>
-                        </Svg>
-                        </View>
-                        {!isItemUnlocked('ears', `ears${id}`) && (
-                            <View style={styles.lockOverlay}>
-                                <Ionicons name="lock-closed" size={24} color="white" />
+                {earIds.map((id) => {
+                    const isUnlocked = id === 0 || unlockedItems.ears.includes(`ears${id}`);
+                    return (
+                        <TouchableOpacity
+                            key={id}
+                            style={[
+                                styles.itemButton,
+                                !isUnlocked && styles.lockedItem
+                            ]}
+                            onPress={() => {
+                                if (isUnlocked) {
+                                    setSelectedEarId(id);
+                                } else {
+                                    setSelectedItemToUnlock({
+                                        category: 'ears',
+                                        id: `ears${id}`,
+                                        cost: 2
+                                    });
+                                    setShowUnlockModal(true);
+                                }
+                            }}
+                        >
+                            <View style={{ backgroundColor: '#888', padding: 5 }}>
+                                <Svg width={90} height={90} viewBox="30 30 130 130">
+                                    <G id={`ears-preview-${id}`}>
+                                        {rawEarsData[id].left.map((shape, idx) => (
+                                            <Path
+                                                key={`left-ear-${idx}`}
+                                                d={shape.path}
+                                                fill="#F3D4CF"
+                                                stroke="#000"
+                                                strokeWidth="1"
+                                                opacity="1"
+                                            />
+                                        ))}
+                                        {rawEarsData[id].right.map((shape, idx) => (
+                                            <Path
+                                                key={`right-ear-${idx}`}
+                                                d={shape.path}
+                                                fill="#F3D4CF"
+                                                stroke="#000"
+                                                strokeWidth="1"
+                                                opacity="1"
+                                            />
+                                        ))}
+                                    </G>
+                                </Svg>
                             </View>
-                        )}
-                    </TouchableOpacity>
-                ))}
+                            {!isUnlocked && (
+                                <View style={styles.lockOverlay}>
+                                    <Ionicons name="lock-closed" size={24} color="white" />
+                                </View>
+                            )}
+                        </TouchableOpacity>
+                    );
+                })}
             </ScrollView>
         </View>
     );
@@ -420,59 +483,62 @@ const AvatarCustomization = () => {
         <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Eyebrows</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {eyebrowsIds.map((id) => (
-                    <TouchableOpacity
-                        key={id}
-                        style={[
-                            styles.itemButton,
-                            !isItemUnlocked('eyebrows', `eyebrows${id}`) && styles.lockedItem
-                        ]}
-                        onPress={() => {
-                            if (isItemUnlocked('eyebrows', `eyebrows${id}`)) {
-                                setSelectedEyebrowId(id);
-                            } else {
-                                setSelectedItemToUnlock({
-                                    category: 'eyebrows',
-                                    id: `eyebrows${id}`,
-                                    cost: 2
-                                });
-                                setShowUnlockModal(true);
-                            }
-                        }}
-                    >
-                        <View style={{ backgroundColor: '#888', padding: 5 }}>
-                        <Svg width={80} height={80} viewBox="40 20 120 100">
-                            <G id={`eyebrows-preview-${id}`}>
-                                {rawEyebrowData[id].left.map((shape, index) => (
-                                    <Path
-                                        key={`eyebrow-left-${index}`}
-                                        d={shape.path}
-                                        fill="#000"
-                                        stroke="#000"
-                                        strokeWidth="1"
-                                        opacity="1"
-                                    />
-                                ))}
-                                {rawEyebrowData[id].right.map((shape, index) => (
-                                    <Path
-                                        key={`eyebrow-right-${index}`}
-                                        d={shape.path}
-                                        fill="#000"
-                                        stroke="#000"
-                                        strokeWidth="1"
-                                        opacity="1"
-                                    />
-                                ))}
-                            </G>
-                        </Svg>
-                        </View>
-                        {!isItemUnlocked('eyebrows', `eyebrows${id}`) && (
-                            <View style={styles.lockOverlay}>
-                                <Ionicons name="lock-closed" size={24} color="white" />
+                {eyebrowsIds.map((id) => {
+                    const isUnlocked = id === 0 || unlockedItems.eyebrows.includes(`eyebrows${id}`);
+                    return (
+                        <TouchableOpacity
+                            key={id}
+                            style={[
+                                styles.itemButton,
+                                !isUnlocked && styles.lockedItem
+                            ]}
+                            onPress={() => {
+                                if (isUnlocked) {
+                                    setSelectedEyebrowId(id);
+                                } else {
+                                    setSelectedItemToUnlock({
+                                        category: 'eyebrows',
+                                        id: `eyebrows${id}`,
+                                        cost: 2
+                                    });
+                                    setShowUnlockModal(true);
+                                }
+                            }}
+                        >
+                            <View style={{ backgroundColor: '#888', padding: 5 }}>
+                                <Svg width={80} height={80} viewBox="40 20 120 100">
+                                    <G id={`eyebrows-preview-${id}`}>
+                                        {rawEyebrowData[id].left.map((shape, index) => (
+                                            <Path
+                                                key={`eyebrow-left-${index}`}
+                                                d={shape.path}
+                                                fill="#000"
+                                                stroke="#000"
+                                                strokeWidth="1"
+                                                opacity="1"
+                                            />
+                                        ))}
+                                        {rawEyebrowData[id].right.map((shape, index) => (
+                                            <Path
+                                                key={`eyebrow-right-${index}`}
+                                                d={shape.path}
+                                                fill="#000"
+                                                stroke="#000"
+                                                strokeWidth="1"
+                                                opacity="1"
+                                            />
+                                        ))}
+                                    </G>
+                                </Svg>
                             </View>
-                        )}
-                    </TouchableOpacity>
-                ))}
+                            {!isUnlocked && (
+                                <View style={styles.lockOverlay}>
+                                    <Ionicons name="lock-closed" size={24} color="white" />
+                                </View>
+                            )}
+                        </TouchableOpacity>
+                    );
+                })}
             </ScrollView>
         </View>
     );
@@ -642,48 +708,51 @@ const AvatarCustomization = () => {
         <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Clothes</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {clothesShapeIds.map((id) => (
-                    <TouchableOpacity
-                        key={id}
-                        style={[
-                            styles.itemButton,
-                            !isItemUnlocked('clothes', `clothes${id}`) && styles.lockedItem
-                        ]}
-                        onPress={() => {
-                            if (isItemUnlocked('clothes', `clothes${id}`)) {
-                                setCurrentClothesId(id);
-                            } else {
-                                setSelectedItemToUnlock({
-                                    category: 'clothes',
-                                    id: `clothes${id}`,
-                                    cost: 2
-                                });
-                                setShowUnlockModal(true);
-                            }
-                        }}
-                    >
-                        <View style={{ backgroundColor: '#888', padding: 5 }}>
-                            <Svg width={80} height={70} viewBox="0 30 200 190">
-                                <G id={`clothes-preview-${id}`}>
-                                    {clothesShapesRaw[id].map((pathObj, idx) => (
-                                        <Path
-                                            key={`clothes-${idx}`}
-                                            d={pathObj.path}
-                                            fill={pathObj.fill}
-                                            strokeWidth="1"
-                                            opacity="1"
-                                        />
-                                    ))}
-                                </G>
-                            </Svg>
-                        </View>
-                        {!isItemUnlocked('clothes', `clothes${id}`) && (
-                            <View style={styles.lockOverlay}>
-                                <Ionicons name="lock-closed" size={24} color="white" />
+                {clothesShapeIds.map((id) => {
+                    const isUnlocked = id === 'clothes1' || unlockedItems.clothes.includes(`clothes${id}`);
+                    return (
+                        <TouchableOpacity
+                            key={id}
+                            style={[
+                                styles.itemButton,
+                                !isUnlocked && styles.lockedItem
+                            ]}
+                            onPress={() => {
+                                if (isUnlocked) {
+                                    setCurrentClothesId(id);
+                                } else {
+                                    setSelectedItemToUnlock({
+                                        category: 'clothes',
+                                        id: `clothes${id}`,
+                                        cost: 2
+                                    });
+                                    setShowUnlockModal(true);
+                                }
+                            }}
+                        >
+                            <View style={{ backgroundColor: '#888', padding: 5 }}>
+                                <Svg width={80} height={70} viewBox="0 30 200 190">
+                                    <G id={`clothes-preview-${id}`}>
+                                        {clothesShapesRaw[id].map((pathObj, idx) => (
+                                            <Path
+                                                key={`clothes-${idx}`}
+                                                d={pathObj.path}
+                                                fill={pathObj.fill}
+                                                strokeWidth="1"
+                                                opacity="1"
+                                            />
+                                        ))}
+                                    </G>
+                                </Svg>
                             </View>
-                        )}
-                    </TouchableOpacity>
-                ))}
+                            {!isUnlocked && (
+                                <View style={styles.lockOverlay}>
+                                    <Ionicons name="lock-closed" size={24} color="white" />
+                                </View>
+                            )}
+                        </TouchableOpacity>
+                    );
+                })}
             </ScrollView>
         </View>
     );
@@ -912,6 +981,7 @@ const AvatarCustomization = () => {
             </View>
 
             <ScrollView contentContainerStyle={{ marginTop: 10, padding: 10, borderWidth: 2, borderBlockColor: "#fafafa" }}>
+                {renderFaceShapeSection()}
                 {renderBeardSection()}
                 {renderEarsSection()}
                 {renderEyebrowsSection()}
@@ -922,7 +992,7 @@ const AvatarCustomization = () => {
             </ScrollView>
 
             {renderUnlockModal()}
-        </View>
+                            </View>
     );
 };
 
