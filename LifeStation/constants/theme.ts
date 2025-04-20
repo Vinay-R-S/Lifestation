@@ -29,6 +29,23 @@ export const Colors = {
     // Hover
     buttonHover: '#6A92D3',     // Hover color for buttons (muted blue)
     tabHover: '#334D77',        // Hover effect for tabs (darker blue)
+
+    light: {
+      background: '#7FA9FF',  // Light theme background
+      surface: '#E0E9FF',     // Light theme surface (optional)
+      textPrimary: '#000000',  // Light theme text color (dark for contrast)
+      textSecondary: '#333333',// Secondary text color
+      icon: '#000000',        // Light theme icon color (dark for contrast)
+      // Add more color properties as needed
+    },
+    dark: {
+      background: '#0B0D1A',  // Dark theme background
+      surface: '#1A1C28',     // Dark theme surface (optional)
+      textPrimary: '#FFFFFF', // Dark theme text color (light for contrast)
+      textSecondary: '#B0B0B0',// Secondary text color
+      icon: '#FFFFFF',        // Dark theme icon color (light for contrast)
+      // Add more color properties as needed
+    },
   };
   
   export const Fonts = {
@@ -42,7 +59,7 @@ export const Colors = {
       fontFamily: Fonts.bold,
       fontSize: 24,
       color: Colors.textPrimary,
-      fontWeight: 'bold',
+      fontWeight: '600',
     },
     subtitle: {
       fontFamily: Fonts.bold,

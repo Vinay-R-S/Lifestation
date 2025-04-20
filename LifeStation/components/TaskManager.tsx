@@ -157,7 +157,7 @@ export default function TaskManager() {
         {tasks.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Ionicons name="document-text-outline" size={64} color={Colors.accent} />
-            <Text style={[styles.emptyText, TextStyles.header]}>No tasks yet</Text>
+            <Text style={[styles.emptyText, TextStyles.body]}>No tasks yet</Text>
             <Text style={[styles.emptySubtext, TextStyles.body]}>Tap the + button to add a new task</Text>
           </View>
         ) : (
@@ -183,7 +183,7 @@ export default function TaskManager() {
               >
                 <View style={styles.taskInfo}>
                   <View style={styles.titleContainer}>
-                    <Text style={[styles.taskTitle, TextStyles.header]}>{task.title}</Text>
+                    <Text style={[styles.taskTitle, TextStyles.title]}>{task.title}</Text>
                     {task.isHabit && (
                       <View style={styles.habitBadge}>
                         <Ionicons name="star" size={16} color={Colors.yellow} />
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   },
   progressButtonText: {
     color: Colors.yellow,
-    TextStylesize: 20,
+    // TextStylesize: 20,
     fontWeight: 'bold',
   },
   progressText: {

@@ -9,6 +9,12 @@ interface GameState {
     message: string;
     type: 'coin' | 'health';
   } | null;
+
+  profile: {
+    name: string;
+    avatar: string;
+  };
+  totalStreak: number;
 }
 
 interface GameStateContextType {
@@ -29,6 +35,13 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
     lastProgressDates: {},
     habitStreaks: {},
     notification: null,
+
+    // ✅ New fields
+    profile: {
+      name: 'Guest',
+      avatar: 'default_avatar.png',
+    },
+    totalStreak: 0,
   });
 
   const addCoins = (amount: number) => {
