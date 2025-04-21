@@ -155,7 +155,7 @@ export default function TaskManager() {
     <View style={styles.container}>
       <ScrollView style={styles.taskList}>
         {tasks.length === 0 ? (
-          <View style={styles.emptyContainer}>
+          <View style={styles.emptyContainer} testID="empty-task-view">
             <Ionicons name="document-text-outline" size={64} color={Colors.accent} />
             <Text style={[styles.emptyText, TextStyles.body]}>No tasks yet</Text>
             <Text style={[styles.emptySubtext, TextStyles.body]}>Tap the + button to add a new task</Text>
@@ -183,7 +183,7 @@ export default function TaskManager() {
               >
                 <View style={styles.taskInfo}>
                   <View style={styles.titleContainer}>
-                    <Text style={[styles.taskTitle, TextStyles.title]}>{task.title}</Text>
+                    <Text style={[styles.taskTitle, TextStyles.title]} testID={`task-title-${task.id}`}>{task.title}</Text>
                     {task.isHabit && (
                       <View style={styles.habitBadge}>
                         <Ionicons name="star" size={16} color={Colors.yellow} />
@@ -192,7 +192,7 @@ export default function TaskManager() {
                     )}
                   </View>
                   {task.deadline && (
-                    <Text style={[styles.deadline, TextStyles.body]}>Due: {task.deadline}</Text>
+                    <Text style={[styles.deadline, TextStyles.body]} testID={`deadline-${task.id}`}>Due: {task.deadline}</Text>
                   )}
                 </View>
                 {task.type === 'todo' ? (
@@ -212,7 +212,7 @@ export default function TaskManager() {
                     >
                       <Text style={styles.progressButtonText}>-</Text>
                     </TouchableOpacity>
-                    <Text style={[styles.progressText, TextStyles.body]}>{task.progress || 0}</Text>
+                    <Text style={[styles.progressText, TextStyles.body]} testID={`progress-count-${task.id}`}>{task.progress || 0}</Text>
                     <TouchableOpacity
                       style={styles.progressButton}
                       onPress={() => updateProgress(task.id, true)}

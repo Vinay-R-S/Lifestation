@@ -55,8 +55,8 @@ export default function AddTaskModal({ visible, onClose, onAdd }: AddTaskModalPr
           <TouchableOpacity activeOpacity={1} onPress={(e) => e.stopPropagation()}>
             <View style={styles.modalContent}>
               <View style={styles.header}>
-                <Text style={styles.modalTitle}>Add New Task</Text>
-                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                <Text style={styles.modalTitle} testID="modal-title">Add New Task</Text>
+                <TouchableOpacity style={styles.closeButton} onPress={onClose} >
                   <Ionicons name="close" size={24} color={Colors.yellow} />
                 </TouchableOpacity>
               </View>
@@ -71,6 +71,7 @@ export default function AddTaskModal({ visible, onClose, onAdd }: AddTaskModalPr
                     onChangeText={(text) => setNewTask({ ...newTask, title: text })}
                     placeholderTextColor={Colors.textMuted}
                     autoFocus
+                    testID="input-title"
                   />
                 </View>
 
@@ -93,19 +94,19 @@ export default function AddTaskModal({ visible, onClose, onAdd }: AddTaskModalPr
                         style={[styles.typeButton, newTask.type === 'todo' && styles.selectedType]}
                         onPress={() => setNewTask({ ...newTask, type: 'todo' })}
                         testID="type-todo">
-                        <Text style={[styles.typeText, newTask.type === 'todo' && styles.selectedText]}>Todo Task</Text>
+                        <Text style={[styles.typeText, newTask.type === 'todo' && styles.selectedText]} testID="label-type-todo">Todo Task</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={[styles.typeButton, newTask.type === 'progress' && styles.selectedType]}
                         onPress={() => setNewTask({ ...newTask, type: 'progress' })}
                         testID="type-progress">
-                        <Text style={[styles.typeText, newTask.type === 'progress' && styles.selectedText]}>Habit Task</Text>
+                        <Text style={[styles.typeText, newTask.type === 'progress' && styles.selectedText]} testID="label-type-progress">Habit Task</Text>
                       </TouchableOpacity>
                     </View>
                 </View>
 
                 <TouchableOpacity style={styles.addButton} onPress={handleAddTask} testID="submit-task">
-                  <Text style={styles.addButtonText}>Add Task</Text>
+                  <Text style={styles.addButtonText} testID="submit-task-text">Add Task</Text>
                 </TouchableOpacity>
               </View>
             </View>

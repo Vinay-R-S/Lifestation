@@ -27,9 +27,14 @@ interface GameStateContextType {
   clearNotification: () => void;
 }
 
+// No need to define 'value' prop here
+interface GameStateProviderProps {
+  children: React.ReactNode;
+}
+
 const GameStateContext = createContext<GameStateContextType | undefined>(undefined);
 
-export function GameStateProvider({ children }: { children: React.ReactNode }) {
+export function GameStateProvider({ children }: GameStateProviderProps) {
   const [state, setState] = useState<GameState>({
     coins: 10,
     health: 100,
@@ -37,7 +42,6 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
     habitStreaks: {},
     notification: null,
 
-    // ✅ New fields
     profile: {
       name: 'Guest',
       avatar: 'default_avatar.png',
@@ -47,7 +51,7 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
   });
 
   const addCoins = (amount: number) => {
-    const roundedAmount = Math.round(amount * 10) / 10; // Round to 1 decimal place
+    const roundedAmount = Math.round(amount * 10) / 10;
     setState(prev => ({
       ...prev,
       coins: Math.round((prev.coins + roundedAmount) * 10) / 10,
@@ -120,4 +124,4 @@ export function useGameState() {
     throw new Error('useGameState must be used within a GameStateProvider');
   }
   return context;
-} 
+}
