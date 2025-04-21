@@ -45,3 +45,5 @@ expo-env.d.ts
 
 LifeStation/package-lock.json
 *.zip
+
+error.txt

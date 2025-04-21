@@ -1,3 +1,14 @@
+jest.mock('@expo/vector-icons', () => {
+  return {
+    Ionicons: () => null,
+    FontAwesome: () => null,
+    MaterialIcons: () => null,
+    // Add others if you use more icon sets
+  };
+});
+
+jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import AddTaskModal from '../../components/AddTaskModal'; // Correct relative path
