@@ -1,0 +1,53 @@
+Hey i want to make a CI/CD for my LifeStation app where there is a (tabs) folder in which there is task.tsx so i want to add a task to check the working of the app
+
+so i will give u the app.zip folder and i have done ci.yml in .github/workflows so here is the yml code
+
+name: React Native CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Install & Build Expo App
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: LifeStation
+
+      - name: TypeScript check
+        run: npx tsc --noEmit
+        working-directory: LifeStation
+
+      - name: Run tests (if available)
+        run: npm test
+        working-directory: LifeStation
+
+      - name: Expo build check
+        run: npx expo export --dev
+        working-directory: LifeStation
+
+
+and i have added the testID's where ever it is necessary to interact with the task components so check it once as i have given u the app.zip file also 
+
+Task.tsx uses TaskManger.tsx and AddTaskModal.tsx in components so make sure u check those files also  
