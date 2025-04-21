@@ -56,7 +56,7 @@ export default function AddTaskModal({ visible, onClose, onAdd }: AddTaskModalPr
             <View style={styles.modalContent}>
               <View style={styles.header}>
                 <Text style={styles.modalTitle} testID="modal-title">Add New Task</Text>
-                <TouchableOpacity style={styles.closeButton} onPress={onClose} >
+                <TouchableOpacity style={styles.closeButton} onPress={onClose} testID="close-modal">
                   <Ionicons name="close" size={24} color={Colors.yellow} />
                 </TouchableOpacity>
               </View>
