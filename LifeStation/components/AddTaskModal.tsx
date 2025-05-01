@@ -25,9 +25,10 @@ interface AddTaskModalProps {
   visible: boolean;
   onClose: () => void;
   onAdd: (task: Omit<Task, 'id' | 'completed' | 'progress'>) => void;
+  testID?: string; // ✅ Add this line
 }
 
-export default function AddTaskModal({ visible, onClose, onAdd }: AddTaskModalProps) {
+function AddTaskModal({ visible, onClose, onAdd, testID }: AddTaskModalProps) {
   const [newTask, setNewTask] = React.useState({
     title: '',
     deadline: '',
@@ -46,7 +47,7 @@ export default function AddTaskModal({ visible, onClose, onAdd }: AddTaskModalPr
   };
 
   return (
-    <Modal animationType="slide" transparent visible={visible} onRequestClose={onClose}>
+    <Modal animationType="slide" transparent visible={visible} onRequestClose={onClose} testID={testID}>
       <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -217,3 +218,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+
+export default AddTaskModal;

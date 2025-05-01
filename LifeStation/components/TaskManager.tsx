@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, ScrollView, Animated } from 'react-native';
+
 import { Ionicons } from '@expo/vector-icons';
 import AddTaskModal from './AddTaskModal';
+
 import { useGameState } from '../context/GameStateContext';
 import { Colors, TextStyles } from '../constants/theme';
 
@@ -22,7 +24,7 @@ interface Task {
   isHabit?: boolean;
 }
 
-export default function TaskManager() {
+function TaskManager() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const taskAnimations = useRef<{ [key: string]: Animated.Value }>({});
@@ -71,17 +73,17 @@ export default function TaskManager() {
   const toggleTaskCompletion = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
-
+  
     if (!task.completed) {
       if (!taskAnimations.current[taskId]) {
         taskAnimations.current[taskId] = new Animated.Value(0);
       }
-
+  
       setTasks(tasks.map(t => t.id === taskId ? { ...t, completed: true } : t));
       const coinReward = task.isHabit ? 1 : 0.5;
       addCoins(coinReward);
       if (task.isHabit) updateHabitStreak(taskId, true);
-
+  
       Animated.timing(taskAnimations.current[taskId], {
         toValue: 1,
         duration: 500,
@@ -93,7 +95,7 @@ export default function TaskManager() {
     } else {
       setTasks(tasks.map(task => task.id === taskId ? { ...task, completed: !task.completed } : task));
     }
-  };
+  };  
 
   const checkForHabit = (task: Task) => {
     if (!task.progressHistory || task.isHabit) return false;
@@ -157,8 +159,8 @@ export default function TaskManager() {
         {tasks.length === 0 ? (
           <View style={styles.emptyContainer} testID="empty-task-view">
             <Ionicons name="document-text-outline" size={64} color={Colors.accent} />
-            <Text style={[styles.emptyText, TextStyles.body]}>No tasks yet</Text>
-            <Text style={[styles.emptySubtext, TextStyles.body]}>Tap the + button to add a new task</Text>
+            <Text style={[styles.emptyText, TextStyles.body]} testID="empty-task-title">No tasks yet</Text>
+            <Text style={[styles.emptySubtext, TextStyles.body]} testID="empty-task-subtext">Tap the + button to add a new task</Text>
           </View>
         ) : (
           tasks.map(task => {
@@ -185,7 +187,7 @@ export default function TaskManager() {
                   <View style={styles.titleContainer}>
                     <Text style={[styles.taskTitle, TextStyles.title]} testID={`task-title-${task.id}`}>{task.title}</Text>
                     {task.isHabit && (
-                      <View style={styles.habitBadge}>
+                      <View style={styles.habitBadge} testID={`habit-badge-${task.id}`}>
                         <Ionicons name="star" size={16} color={Colors.yellow} />
                         <Text style={[styles.habitText, TextStyles.body]}>Habit</Text>
                       </View>
@@ -208,7 +210,7 @@ export default function TaskManager() {
                     <TouchableOpacity
                       style={styles.progressButton}
                       onPress={() => updateProgress(task.id, false)}
-                      testID={`decrement-${task.id}`}
+                      testID={`decrement-${task.id}`} // Fixed testID pattern
                     >
                       <Text style={styles.progressButtonText}>-</Text>
                     </TouchableOpacity>
@@ -238,6 +240,7 @@ export default function TaskManager() {
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         onAdd={handleAddTask}
+        testID="add-task-modal"
       />
     </View>
   );
@@ -288,60 +291,56 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   checkbox: {
-    width: 24,
-    height: 24,
-    borderWidth: 2,
-    borderColor: Colors.yellow,
-    borderRadius: 4,
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 10,
   },
   progressControls: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   progressButton: {
-    backgroundColor: Colors.textPrimary,
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: Colors.accent,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     marginHorizontal: 5,
   },
   progressButtonText: {
-    color: Colors.yellow,
-    // TextStylesize: 20,
-    fontWeight: 'bold',
+    color: Colors.background,
+    fontSize: 18,
   },
   progressText: {
-    color: Colors.yellow,
-    marginHorizontal: 10,
+    minWidth: 30,
+    textAlign: 'center',
   },
   floatingButton: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
-    backgroundColor: Colors.accent,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    bottom: 30,
+    right: 30,
+    backgroundColor: Colors.primary,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 5,
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 100,
+    marginTop: 100,
+    paddingHorizontal: 20,
   },
   emptyText: {
-    color: Colors.yellow,
-    marginTop: 16,
+    fontSize: 20,
+    marginTop: 20,
+    color: Colors.textPrimary,
   },
   emptySubtext: {
-    color: Colors.accent,
+    fontSize: 14,
+    color: Colors.textSecondary,
     marginTop: 8,
+    textAlign: 'center',
   },
 });
+
+export default TaskManager;
