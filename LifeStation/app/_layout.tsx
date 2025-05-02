@@ -1,23 +1,27 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
-import { useRouter, useSegments } from 'expo-router';
 import { GameStateProvider } from '../context/GameStateContext';
 import NotificationManager from '../components/NotificationManager';
-
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-// This can be replaced with your actual auth state management
 const useAuth = () => {
-  // For now, we'll just return false to always show the auth screens
-  return { isLoggedIn: true };
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsLoggedIn(!!user);
+    });
+    return unsubscribe;
+  }, []);
+  return { isLoggedIn };
 };
 
 export default function RootLayout() {
@@ -36,17 +40,19 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  // Only run navigation after loaded and after first render
   useEffect(() => {
+    if (!loaded) return; // <-- Only navigate after loaded
+
     const inAuthGroup = segments[0] === 'auth';
 
     if (!isLoggedIn && !inAuthGroup) {
-      // Redirect to the sign-in page.
-      router.replace('/auth/login');
+      // Use setTimeout to ensure navigation happens after mount
+      setTimeout(() => router.push('/auth/login'), 0);
     } else if (isLoggedIn && inAuthGroup) {
-      // Redirect away from the sign-in page.
-      router.replace('/(tabs)/tasks');
+      setTimeout(() => router.push('/(tabs)/tasks'), 0);
     }
-  }, [isLoggedIn, segments]);
+  }, [isLoggedIn, segments, loaded]);
 
   if (!loaded) {
     return null;
