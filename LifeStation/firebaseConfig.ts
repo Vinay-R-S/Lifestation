@@ -2,13 +2,14 @@ import { initializeApp, FirebaseOptions } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
+// Replace these placeholder values with your actual Firebase configuration
 const firebaseConfig: FirebaseOptions = {
-  apiKey: 'AIzaSyAcj4NLumSJOI1pG5BZpZ9kkkYeeXo264U',
-  authDomain: 'lifestation-810e9.firebaseapp.com',
-  projectId: 'lifestation-810e9',
-  storageBucket: 'lifestation-810e9.appspot.com',
-  messagingSenderId: '5988746918',
-  appId: '1:5988746918:web:b4010bdd7e48bd51f95667',
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
