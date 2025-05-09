@@ -133,11 +133,20 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface,
     borderRadius: 16,
     padding: 24,
-    shadowColor: Colors.overlay,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.35,
-    shadowRadius: 14,
-    elevation: 14,
+    ...Platform.select({
+      ios: {
+        shadowColor: Colors.overlay,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.35,
+        shadowRadius: 14,
+      },
+      android: {
+        elevation: 14,
+      },
+      web: {
+        boxShadow: '0px 8px 14px rgba(0, 0, 0, 0.35)',
+      },
+    }),
   },
   header: {
     flexDirection: 'row',
@@ -190,11 +199,20 @@ const styles = StyleSheet.create({
   },
   selectedType: {
     backgroundColor: Colors.secondary,
-    shadowColor: Colors.overlay,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 6,
+    ...Platform.select({
+      ios: {
+        shadowColor: Colors.overlay,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.25,
+        shadowRadius: 6,
+      },
+      android: {
+        elevation: 6,
+      },
+      web: {
+        boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.25)',
+      },
+    }),
   },
   typeText: {
     fontSize: 15,

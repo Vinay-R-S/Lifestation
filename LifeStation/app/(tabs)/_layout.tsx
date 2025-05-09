@@ -29,18 +29,25 @@ export default function TabLayout() {
         },
         headerStyle: {
           backgroundColor: Colors.background,
-          shadowColor: Colors.overlay,
-          shadowOpacity: 0.8,
-          shadowRadius: 10,
-          elevation: 0,
+          ...Platform.select({
+            ios: {
+              shadowColor: Colors.overlay,
+              shadowOpacity: 0.8,
+              shadowRadius: 10,
+            },
+            android: {
+              elevation: 0,
+            },
+            web: {
+              boxShadow: '0px 10px 10px rgba(0, 0, 0, 0.8)',
+            },
+          }),
         },
         headerTintColor: Colors.primary,
         headerTitleStyle: {
           fontFamily: Fonts.bold,
           fontSize: 20,
-          textShadowColor: Colors.overlay,
-          textShadowOffset: { width: 1, height: 1 },
-          textShadowRadius: 5,
+          textShadow: '1px 1px 5px rgba(0, 0, 0, 0.8)',
           color: Colors.textPrimary,
         },
       }}>
