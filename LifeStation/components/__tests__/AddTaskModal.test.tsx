@@ -3,16 +3,12 @@ jest.mock('@expo/vector-icons', () => {
     Ionicons: () => null,
     FontAwesome: () => null,
     MaterialIcons: () => null,
-    // Add others if you use more icon sets
   };
 });
 
-// jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
-
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import AddTaskModal from '../../components/AddTaskModal'; // Correct relative path
-import { Colors } from '@/constants/theme';
+import AddTaskModal from '../../components/AddTaskModal';
 
 describe('AddTaskModal', () => {
   const mockOnClose = jest.fn();
@@ -20,11 +16,7 @@ describe('AddTaskModal', () => {
 
   const setup = () => {
     return render(
-      <AddTaskModal
-        visible={true}
-        onClose={mockOnClose}
-        onAdd={mockOnAdd}
-      />
+      <AddTaskModal visible={true} onClose={mockOnClose} onAdd={mockOnAdd}/>
     );
   };
 
@@ -42,9 +34,7 @@ describe('AddTaskModal', () => {
     fireEvent.press(getByTestId('submit-task'));
 
     await waitFor(() => expect(mockOnAdd).toHaveBeenCalledWith({
-      title: 'New Task',
-      deadline: undefined,
-      type: 'todo',
+      title: 'New Task', deadline: undefined, type: 'todo',
     }));
   });
 

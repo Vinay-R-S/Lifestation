@@ -1,17 +1,20 @@
 import { initializeApp, FirebaseOptions } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeAuth, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Replace these placeholder values with your actual Firebase configuration
 const firebaseConfig: FirebaseOptions = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: 'AIzaSyAcj4NLumSJOI1pG5BZpZ9kkkYeeXo264U',
+  authDomain: 'lifestation-810e9.firebaseapp.com',
+  projectId: 'lifestation-810e9',
+  storageBucket: 'lifestation-810e9.appspot.com',
+  messagingSenderId: '5988746918',
+  appId: '1:5988746918:web:b4010bdd7e48bd51f95667',
 };
 
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+export const auth = initializeAuth(app, {
+  persistence: browserLocalPersistence
+});
 export const db = getFirestore(app);
