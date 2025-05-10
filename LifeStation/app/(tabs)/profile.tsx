@@ -153,7 +153,7 @@ export default function ProfileScreen() {
             <Text style={styles.profileValue}>{userData?.gender || 'Unspecified'}</Text>
 
             <Text style={styles.profileLabel}>Coins:</Text>
-            <Text style={styles.profileValue}>{userData?.coins ?? 0}</Text>
+            <Text style={styles.profileValue}>{userData?.coins ?? 10}</Text>
 
             <Text style={styles.profileLabel}>Streak:</Text>
             <Text style={styles.profileValue}>{state.totalStreak || 0} days</Text>
