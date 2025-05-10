@@ -5,6 +5,7 @@ import elementsData from "../../data/jsons/male.json";
 import { Colors, TextStyles } from '../../constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { useGameState } from '../../context/GameStateContext';
+import TitleWithBox from '../../components/TitleWithBox'; 
 
 const getIrisFillColor = (fill: string) => {
     switch (fill) {
@@ -227,8 +228,7 @@ const AvatarCustomization = () => {
             <Modal
                 visible={showUnlockModal}
                 transparent={true}
-                animationType="slide"
-            >
+                animationType="slide">
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Unlock Item</Text>
@@ -755,12 +755,21 @@ const AvatarCustomization = () => {
 
     return (
         <View style={styles.container}>
+            <View style={styles.TextWithBoxcontainer}>
+                  {/* Reuse the TitleWithBox component */}
+                  <TitleWithBox 
+                    title="Avatar Customization" 
+                    backgroundColor={Colors.primary} 
+                    fontSize={24} 
+                    textColor={Colors.textPrimary} 
+                  />
+                </View>
             <View style={styles.coinContainer}>
                 <Ionicons name="logo-bitcoin" size={24} color="gold" />
                 <Text style={styles.coinText}>{state.coins}</Text>
             </View>
 
-            <View style={{ "width": "100%", "marginTop": 12, "marginBottom": 16, "display": "flex", "justifyContent": "center", "alignItems": "center" }}>
+            <View style={{ "width": "100%", "marginTop": 36, "marginBottom": 16, "display": "flex", "justifyContent": "center", "alignItems": "center" }}>
                 <Svg width="200" height="200" viewBox="0 0 200 200" preserveAspectRatio="xMinYMin meet">
                     {/* <Defs /> */}
                     <G id="svga-group-wrapper">
@@ -803,9 +812,7 @@ const AvatarCustomization = () => {
                                                     strokeWidth="1"
                                                     opacity="1"
                                                     data-filltype={shape.fill}
-                                                    data-colored="true"
-
-                                                />
+                                                    data-colored="true"/>
                                             ))}
                                         </G>
                                     </G>
@@ -997,7 +1004,7 @@ export default AvatarCustomization;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0A0D1A', // Apply dark theme background color here
+        backgroundColor: Colors.background, // Apply background color from theme
     },
     content: {
         flex: 1,
@@ -1005,7 +1012,7 @@ const styles = StyleSheet.create({
     text: {
         color: Colors.textPrimary, // Set text color from theme
         fontSize: 18,
-        fontFamily: 'SpaceMono-Regular',
+        fontFamily: TextStyles.font_family,
     },
     buttonHeadText: {
         fontSize: 20,
@@ -1013,7 +1020,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginBottom: 5,
         color: Colors.textPrimary,
-        textAlign: "center"
+        textAlign: "center",
     },
     buttonViewOne: {
         width: '100%',
@@ -1025,22 +1032,34 @@ const styles = StyleSheet.create({
     innerSVG: {
         borderWidth: 2,
         borderColor: Colors.textPrimary,
-        backgroundColor: "#888",
+        backgroundColor: Colors.textSecondary,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 10
+        marginTop: 40,
+        borderRadius: 10,
     },
     coinContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
         backgroundColor: Colors.background,
+        borderRadius: 20,
+        position: 'absolute',
+        right: 10,  
+        top: 10,    
+        elevation: 3, 
+        shadowColor: '#fff',
+        shadowOffset: { width: 0, height: 2 },
+        marginTop: 100,
+        borderWidth: 1,
+        borderColor: "#fff"
     },
     coinText: {
         marginLeft: 5,
         fontSize: 18,
-        color: 'gold',
+        color: Colors.yellow,
     },
     sectionContainer: {
         marginBottom: 20,
@@ -1069,12 +1088,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0,0,0,0.5)',
+        
     },
     modalContent: {
         backgroundColor: Colors.background,
         padding: 20,
         borderRadius: 10,
         width: '80%',
+        marginTop: 40
     },
     modalTitle: {
         fontSize: 20,
@@ -1102,7 +1123,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     modalButtonText: {
-        color: 'white',
+        color: Colors.background,
         fontSize: 16,
     },
     item: {
@@ -1111,6 +1132,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         backgroundColor: Colors.background,
         alignItems: 'center',
+        
     },
     selectedItem: {
         backgroundColor: Colors.primary,
@@ -1119,16 +1141,17 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 5,
         right: 5,
+        
     },
     itemText: {
         color: Colors.textPrimary,
         fontSize: 16,
-        fontFamily: 'Arial',
+        fontFamily: TextStyles.font_family,
     },
     costText: {
         color: Colors.primary,
         fontSize: 14,
-        fontFamily: 'Arial',
+        fontFamily: TextStyles.font_family,
         marginTop: 5,
     },
     lockOverlay: {
@@ -1140,5 +1163,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.5)',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    TextWithBoxcontainer: {
+        marginTop: 20,
     },
 });

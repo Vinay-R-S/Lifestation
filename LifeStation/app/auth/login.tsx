@@ -1,8 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
 import { useRouter } from 'expo-router';
+import { Colors, TextStyles } from '../../constants/theme'; // Importing theme
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -14,7 +23,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // Auth state will redirect automatically
+      // Navigation will occur automatically due to auth observer
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       Alert.alert('Login Failed', message);
@@ -25,25 +34,44 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={TextStyles.title}>Login</Text>
+
       <TextInput
         style={styles.input}
         placeholder="Email"
+        placeholderTextColor={Colors.textMuted}
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
         keyboardType="email-address"
       />
+
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor={Colors.textMuted}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title={loading ? 'Logging in...' : 'Login'} onPress={handleLogin} disabled={loading} />
-      <TouchableOpacity onPress={() => router.replace('/auth/signup')} style={styles.linkContainer}>
-        <Text style={styles.link}>Don't have an account? Sign up</Text>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleLogin}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color={Colors.textPrimary} />
+        ) : (
+          <Text style={[TextStyles.button, { color: Colors.textPrimary }]}>Login</Text>
+        )}
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.linkContainer}
+        onPress={() => router.replace('/auth/signup')}
+      >
+        <Text style={styles.linkText}>Don't have an account? Sign up</Text>
       </TouchableOpacity>
     </View>
   );
@@ -52,31 +80,35 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.background, // Using background from theme
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    marginBottom: 24,
   },
   input: {
     width: '100%',
     height: 48,
-    borderColor: '#ccc',
-    borderWidth: 1,
+    backgroundColor: Colors.surface, // Using surface from theme
     borderRadius: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     marginBottom: 16,
     fontSize: 16,
+    color: Colors.textPrimary,
+  },
+  button: {
+    width: '100%',
+    backgroundColor: Colors.primary, // Using primary color from theme
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 8,
   },
   linkContainer: {
-    marginTop: 16,
+    marginTop: 20,
   },
-  link: {
-    color: '#007bff',
+  linkText: {
+    color: Colors.secondary, // Using secondary color for link
     fontSize: 16,
+    fontWeight: '500',
   },
-}); 
+});

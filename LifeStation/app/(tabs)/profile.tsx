@@ -8,6 +8,10 @@ import { auth, db } from '../../firebaseConfig';
 import { doc, getDoc, enableNetwork, disableNetwork } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'expo-router';
+import { TouchableOpacity } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+import TitleWithBox from '../../components/TitleWithBox'; 
+
 
 interface Task {
   id: string;
@@ -126,6 +130,24 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.container}>
+    {/* NFT Marketplace - TOPMOST RIGHT */}
+    <View style={styles.nftButtonContainer}>
+      <TouchableOpacity
+        style={styles.nftButton}
+        onPress={() => WebBrowser.openBrowserAsync('https://rplg.co/facd2061')}
+      >
+        <Ionicons name="cart" size={20} color={Colors.primary} />
+        <Text style={styles.nftButtonText}>NFT Marketplace</Text>
+      </TouchableOpacity>
+    </View>
+
+    {/* Title */}
+    <TitleWithBox 
+      title="Profile" 
+      backgroundColor={Colors.primary} 
+      fontSize={24} 
+      textColor={Colors.textPrimary} 
+    />
       {/* Offline Banner */}
       {offlineMode && (
         <View style={styles.offlineBanner}>
@@ -153,7 +175,10 @@ export default function ProfileScreen() {
             <Text style={styles.profileValue}>{userData?.gender || 'Unspecified'}</Text>
 
             <Text style={styles.profileLabel}>Coins:</Text>
-            <Text style={styles.profileValue}>{userData?.coins ?? 10}</Text>
+            <Text style={[styles.profileValue, styles.bitcoinValue]}>
+              <Ionicons name="logo-bitcoin" size={18} color="yellow" /> 
+              {userData?.coins ?? 0}
+            </Text>
 
             <Text style={styles.profileLabel}>Streak:</Text>
             <Text style={styles.profileValue}>{state.totalStreak || 0} days</Text>
@@ -164,7 +189,7 @@ export default function ProfileScreen() {
           <ScrollView style={styles.content}>
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
-                <Ionicons name="star" size={24} color={Colors.accent} />
+                <Ionicons name="star" size={24} color="yellow" />
                 <Text style={styles.sectionTitle}>Formed Habits</Text>
               </View>
 
@@ -192,7 +217,7 @@ export default function ProfileScreen() {
                         </Text>
                       </View>
                       <View style={styles.habitBadge}>
-                        <Ionicons name="star" size={16} color={Colors.accent} />
+                        <Ionicons name="star" size={16} color="yellow" />
                         <Text style={styles.habitBadgeText}>Habit Formed!</Text>
                       </View>
                     </View>
@@ -236,12 +261,18 @@ const styles = StyleSheet.create({
   profileLabel: {
     color: Colors.textMuted,
     fontSize: 14,
-    fontFamily: 'SpaceMono-Regular',
+    fontFamily: 'sans-serif',
   },
   profileValue: {
     color: Colors.textPrimary,
     fontSize: 18,
-    fontFamily: 'Orbitron-Bold',
+    fontFamily: 'sans-serif',
+    marginBottom: 10,
+  },
+  bitcoinValue: {
+    color: 'yellow', // Bitcoin value color
+    fontSize: 18,
+    fontFamily: 'sans-serif',
     marginBottom: 10,
   },
   content: {
@@ -257,33 +288,30 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   sectionTitle: {
-    color: Colors.accent,
+    color: Colors.primary,
     fontSize: 24,
-    fontFamily: 'Orbitron-Bold',
+    fontFamily: 'sans-serif',
   },
   emptyContainer: {
     padding: 20,
     alignItems: 'center',
   },
   emptyText: {
-    color: Colors.primary,
+    color: Colors.textMuted,
     fontSize: 18,
-    fontFamily: 'Orbitron-Bold',
-    textAlign: 'center',
+    fontFamily: 'sans-serif',
   },
   emptySubtext: {
     color: Colors.textMuted,
     fontSize: 14,
-    textAlign: 'center',
-    marginTop: 8,
-  },
-  habitsList: {
-    gap: 12,
+    fontFamily: 'sans-serif',
+    marginTop: 10,
   },
   habitItem: {
-    backgroundColor: Colors.surface,
-    borderRadius: 8,
-    padding: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+    borderColor: Colors.overlay,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -292,31 +320,29 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   habitTitle: {
+    fontSize: 16,
+    fontFamily: 'sans-serif',
     color: Colors.textPrimary,
-    fontSize: 18,
-    fontFamily: 'Orbitron-Bold',
   },
   habitSubtext: {
-    color: Colors.textMuted,
     fontSize: 12,
-    marginTop: 4,
-    fontFamily: 'SpaceMono-Regular',
+    fontFamily: 'sans-serif',
+    color: Colors.textMuted,
   },
   habitBadge: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    backgroundColor: 'yellow',
+    borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.overlay,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    gap: 6,
   },
   habitBadgeText: {
-    color: Colors.accent,
     fontSize: 12,
-    fontFamily: 'Orbitron-Bold',
+    fontFamily: 'sans-serif',
+    color: Colors.accent,
+    marginLeft: 5,
   },
-  // New styles
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -337,13 +363,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     marginVertical: 15,
-    fontFamily: 'SpaceMono-Regular',
+    fontFamily: 'sans-serif',
   },
   loadingText: {
     color: Colors.textMuted,
     fontSize: 16,
     marginTop: 10,
-    fontFamily: 'SpaceMono-Regular',
+    fontFamily: 'sans-serif',
   },
   offlineBanner: {
     backgroundColor: '#F39C12',
@@ -356,6 +382,35 @@ const styles = StyleSheet.create({
   offlineBannerText: {
     color: '#FFF',
     fontSize: 14,
-    fontFamily: 'SpaceMono-Regular',
+    fontFamily: 'sans-serif',
   },
+  nftButtonContainer: {
+    position: 'absolute',
+    top: 10,  
+    right: 10,
+    zIndex: 999,
+    marginTop: 100
+  },
+  nftButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+  
+  nftButtonText: {
+    marginLeft: 6,
+    color: Colors.primary,
+    fontWeight: 'bold',
+  },
+  habitsList: {
+    flex: 1,
+  }
 });

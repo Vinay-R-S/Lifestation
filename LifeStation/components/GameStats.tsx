@@ -73,7 +73,7 @@ export default function GameStats() {
       <View style={styles.statContainer}>
         <View style={styles.healthContainer}>
           <View style={styles.healthHeader}>
-            <Ionicons name="heart" size={24} color={Colors.accent} />
+            <Ionicons name="heart" size={24} color="red" />
             <Text style={styles.healthText}>{Math.round(state.health)}%</Text>
           </View>
           <View style={styles.healthBarContainer}>
@@ -91,7 +91,7 @@ export default function GameStats() {
       </View>
 
       <Animated.View style={[styles.coinContainer, { transform: [{ scale: coinAnimation }] }]}>
-        <Ionicons name="logo-bitcoin" size={24} color={Colors.accent} />
+        <Ionicons name="logo-bitcoin" size={24} color="yellow" />
         <Text style={styles.coinText}>{state.coins}</Text>
       </Animated.View>
     </View>
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   healthText: {
-    color: Colors.textPrimary,
+    color: "#ffffff",
     fontSize: 16,
     fontFamily: 'Orbitron-Bold',
   },
@@ -148,8 +148,8 @@ const styles = StyleSheet.create({
     borderColor: Colors.overlay,
   },
   coinText: {
-    color: Colors.accent,
+    color: "yellow",
     fontSize: 16,
-    fontFamily: 'Orbitron-Bold',
+    fontFamily: 'sans-serif',
   },
 });

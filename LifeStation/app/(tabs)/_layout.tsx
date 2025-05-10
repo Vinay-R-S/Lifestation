@@ -1,10 +1,29 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native';
-import { Ionicons, FontAwesome5, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Image, Platform, Text, View } from 'react-native';
+import { Ionicons, FontAwesome5, Feather } from '@expo/vector-icons';
 import { Colors, Fonts } from '../../constants/theme';
-
 import { useColorScheme } from '@/hooks/useColorScheme';
+
+function CustomHeaderTitle() {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+      <Image
+        source={require('../../assets/images/logo.png')}
+        style={{ width: 30, height: 30, resizeMode: 'contain' }}
+      />
+      <Text
+        style={{
+          fontFamily: 'sans-serif',
+          fontSize: 20,
+          color: Colors.primary,
+        }}
+      >
+        LifeStation
+      </Text>
+    </View>
+  );
+}
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -23,8 +42,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textMuted,
         tabBarLabelStyle: {
-          fontFamily: Fonts.bold,
-          fontWeight: '700',
+          fontFamily: 'sans-serif',
           fontSize: 12,
         },
         headerStyle: {
@@ -44,22 +62,16 @@ export default function TabLayout() {
           }),
         },
         headerTintColor: Colors.primary,
-        headerTitleStyle: {
-          fontFamily: Fonts.bold,
-          fontSize: 20,
-          textShadow: '1px 1px 5px rgba(0, 0, 0, 0.8)',
-          color: Colors.textPrimary,
-        },
-      }}>
-
-<Tabs.Screen
+        headerTitle: () => <CustomHeaderTitle />,
+      }}
+    >
+      <Tabs.Screen
         name="avatar-customization"
         options={{
           title: 'Avatar',
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="user-edit" size={size} color={color} />
           ),
-          headerTitle: 'Avatar',
         }}
       />
 
@@ -70,7 +82,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Feather name="check-square" size={size} color={color} />
           ),
-          headerTitle: 'My Quests',
         }}
       />
 
@@ -81,11 +92,8 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="id-card" size={size} color={color} />
           ),
-          headerTitle: 'Player Profile',
         }}
       />
-
-    
     </Tabs>
   );
 }

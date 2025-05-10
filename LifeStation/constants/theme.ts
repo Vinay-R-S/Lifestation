@@ -1,87 +1,92 @@
 export const Colors = {
-    // Base
-    background: '#0A0D1A',      // Deep midnight blue
-    surface: '#11182A',         // Dark navy surface
-    overlay: '#1A2238',         // Layered navy-blue depth
-    border: '#23314D',          // Muted steel-blue border
-  
-    // Accents (All Blue Tones)
-    primary: '#4F80FF',         // Lighter, vibrant blue (for primary actions)
-    secondary: '#6A92D3',       // Soft cool blue (for secondary actions)
-    accent: '#80A9FF',          // Soft neon blue for subtle glow
-  
-    // Text (Dark blue family tones, plus lighter tones)
-    textPrimary: '#A2B9FF',     // Light periwinkle blue
-    textSecondary: '#B3C9FF',   // Soft powder blue
-    textMuted: '#7F95B1',       // Soft slate blue
-    yellow: '#4F80FF',          // Replaced yellow with the same blue tone
-  
-    // Feedback (Still blue-hued for mood)
-    success: '#2F6BCF',         // Bluish teal for success
-    warning: '#4477DD',         // Medium blue for warnings
-    error: '#5566CC',           // Soft blue instead of red
-  
-    // Tabs & Buttons
-    tabActive: '#4F80FF',       // Lively blue for active tab
-    tabInactive: '#1A2238',     // Dark navy for inactive tab
-    tabBackground: '#0A0D1A',   // Deep background for tab container
-  
-    // Hover
-    buttonHover: '#6A92D3',     // Hover color for buttons (muted blue)
-    tabHover: '#334D77',        // Hover effect for tabs (darker blue)
+  // Background & Surface (Space + Pixel Shadow Vibes)
+  background: '#0D0A1A',      // Deep space purple
+  surface: '#161123',         // Card or elevated UI background
+  overlay: '#2C2040',         // Overlay surfaces
+  border: '#3D2B57',          // Soft violet-gray border
 
-    light: {
-      background: '#7FA9FF',  // Light theme background
-      surface: '#E0E9FF',     // Light theme surface (optional)
-      textPrimary: '#000000',  // Light theme text color (dark for contrast)
-      textSecondary: '#333333',// Secondary text color
-      icon: '#000000',        // Light theme icon color (dark for contrast)
-      // Add more color properties as needed
-    },
-    dark: {
-      background: '#0B0D1A',  // Dark theme background
-      surface: '#1A1C28',     // Dark theme surface (optional)
-      textPrimary: '#FFFFFF', // Dark theme text color (light for contrast)
-      textSecondary: '#B0B0B0',// Secondary text color
-      icon: '#FFFFFF',        // Dark theme icon color (light for contrast)
-      // Add more color properties as needed
-    },
-  };
-  
-  export const Fonts = {
-    regular: 'SpaceMono-Regular',
-    bold: 'Orbitron-Bold',
-    fancy: 'VT323-Regular',
-  };
-  
-  export const TextStyles = {
-    title: {
-      fontFamily: Fonts.bold,
-      fontSize: 24,
-      color: 'black',
-      
-    },
-    subtitle: {
-      fontFamily: Fonts.bold,
-      fontSize: 18,
-      color: Colors.textSecondary,
-      fontWeight: '600',
-    },
-    body: {
-      fontFamily: Fonts.regular,
-      fontSize: 16,
-      color: Colors.textPrimary,
-    },
-    caption: {
-      fontFamily: Fonts.regular,
-      fontSize: 12,
-      color: Colors.textMuted,
-    },
-    button: {
-      fontFamily: Fonts.bold,
-      fontSize: 16,
-      color: Colors.primary,
-      textTransform: 'uppercase' as const,
-    },
-  };
-  
+  // Accent & Primary Colors (From logo)
+  primary: '#FF72B0',         // Vibrant pixel pink (suit)
+  secondary: '#FDC863',       // Glowing pixel yellow/orange (head)
+  accent: '#6DFDC3',          // Mint green orbit ring
+
+  // Text Colors
+  textPrimary: '#F8F4FF',     // Clean off-white for contrast
+  textSecondary: '#C6B8E6',   // Muted lavender
+  textMuted: '#9487B8',       // Dimmed violet gray
+  yellow: '#FDC863',          // Accent yellow from head
+
+  // Feedback Colors
+  success: '#6DFDC3',         // Same as mint green accent
+  warning: '#FDC863',         // Orange-ish glow
+  error: '#FF647C',           // Retro neon red-pink
+
+  // Tabs & Button States
+  tabActive: '#FF72B0',
+  tabInactive: '#2C2040',
+  tabBackground: '#0D0A1A',
+  buttonHover: '#FF9ED1',
+  tabHover: '#392B50',
+
+  // Light Theme Override
+  light: {
+    background: '#FFF8FB',
+    surface: '#FFFFFF',
+    textPrimary: '#1B0A28',
+    textSecondary: '#4C395A',
+    icon: '#1B0A28',
+  },
+
+  // Dark Theme Override
+  dark: {
+    background: '#0D0A1A',
+    surface: '#161123',
+    textPrimary: '#F8F4FF',
+    textSecondary: '#C6B8E6',
+    icon: '#FFFFFF',
+  },
+};
+
+export const Fonts = {
+  regular: 'sans-serif',    // Default system sans-serif font
+  medium: 'sans-serif',     // Default system sans-serif font
+  bold: 'sans-serif',       // Default system sans-serif font
+  fancy: 'sans-serif',      // Default system sans-serif font
+};
+
+export const TextStyles = {
+  title: {
+    fontFamily: Fonts.bold,
+    fontSize: 36,
+    color: Colors.textPrimary,
+    textAlign: 'center',
+    letterSpacing: 1.5,
+  },
+  subtitle: {
+    fontFamily: Fonts.fancy,
+    fontSize: 20,
+    color: Colors.accent,
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  body: {
+    fontFamily: Fonts.regular,
+    fontSize: 16,
+    color: Colors.textPrimary,
+    textAlign: 'left',
+  },
+  caption: {
+    fontFamily: Fonts.regular,
+    fontSize: 12,
+    color: Colors.textMuted,
+  },
+  button: {
+    fontFamily: Fonts.bold,
+    fontSize: 16,
+    color: Colors.primary,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1.2,
+    textAlign: 'center',
+  },
+  font_family: "sans-serif",
+};
