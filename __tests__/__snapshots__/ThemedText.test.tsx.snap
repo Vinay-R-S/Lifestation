@@ -22,26 +22,3 @@ exports[`ThemedText Component renders correctly with snapshot 1`] = `
   Snapshot test!
 </Text>
 `;
-
-exports[`renders correctly 1`] = `
-<Text
-  style={
-    [
-      {
-        "color": "#1B0A28",
-      },
-      {
-        "fontSize": 16,
-        "lineHeight": 24,
-      },
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-    ]
-  }
->
-  Snapshot test!
-</Text>
-`;
