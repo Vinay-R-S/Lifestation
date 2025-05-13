@@ -199,11 +199,14 @@ function TaskManager() {
                 </View>
                 {task.type === 'todo' ? (
                   <TouchableOpacity
-                    style={styles.checkbox}
+                    style={[
+                      styles.checkbox,
+                      task.completed && { backgroundColor: Colors.primary }
+                    ]}
                     onPress={() => toggleTaskCompletion(task.id)}
                     testID={`checkbox-${task.id}`}
                   >
-                    {task.completed && <Ionicons name="checkmark" size={24} color={Colors.textPrimary} />}
+                    {task.completed && <Ionicons name="checkmark" size={20} color={Colors.textPrimary} />}
                   </TouchableOpacity>
                 ) : (
                   <View style={styles.progressControls}>
@@ -291,7 +294,15 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   checkbox: {
-    padding: 10,
+    width: 24,
+    height: 24,
+    borderWidth: 2,
+    borderColor: Colors.textPrimary,
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+    backgroundColor: Colors.surface,
   },
   progressControls: {
     flexDirection: 'row',
