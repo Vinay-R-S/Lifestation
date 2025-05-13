@@ -8,7 +8,7 @@ jest.mock('@expo/vector-icons', () => {
 
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import AddTaskModal from '../../components/AddTaskModal';
+import AddTaskModal from '../components/AddTaskModal';
 
 describe('AddTaskModal', () => {
   const mockOnClose = jest.fn();
