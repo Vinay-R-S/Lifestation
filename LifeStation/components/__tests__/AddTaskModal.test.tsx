@@ -24,7 +24,7 @@ describe('AddTaskModal', () => {
     const { getByText, getByTestId } = setup();
 
     expect(getByText('Add New Task')).toBeTruthy();
-    expect(getByTestId('modal-title')).toBeTruthy();
+    expect(getByTestId('modal-title')).toBeTruthy();  
   });
 
   it('should call onAdd when Add Task button is pressed', async () => {

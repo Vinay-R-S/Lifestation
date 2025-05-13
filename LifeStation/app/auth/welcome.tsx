@@ -10,7 +10,15 @@ const WelcomeScreen = () => {
   return (
     <View style={styles.container}>
       {/* Logo Image */}
-      <Image source={require('../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
+      <View style={[styles.logoContainer, { backgroundColor: 'rgba(255, 0, 0, 0.1)' }]}>
+        <Image 
+          source={require('../../assets/images/logo.png')} 
+          style={styles.logo} 
+          resizeMode="contain"
+          onError={(error) => console.error('Image loading error:', error.nativeEvent.error)}
+          onLoad={() => console.log('Image loaded successfully')}
+        />
+      </View>
 
       {/* Title */}
       <Animated.Text entering={FadeInDown.delay(100)} style={styles.title}>
@@ -40,10 +48,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 24,
   },
-  logo: {
+  logoContainer: {
     width: 200,
     height: 200,
     marginBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logo: {
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain',
   },
   title: {

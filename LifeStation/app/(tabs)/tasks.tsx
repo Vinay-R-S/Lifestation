@@ -24,5 +24,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
     justifyContent: 'flex-start', // Aligns children at the top
+    marginBottom: 20
   },
 });
