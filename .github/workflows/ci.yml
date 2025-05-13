@@ -39,4 +39,29 @@ jobs:
       - name: Expo build check
         run: npx expo export --dev
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image
+        run: docker build -t lifestation .
+
+      - name: Run Docker container
+        run: |
+          docker run -d \
+            -p 19000:19000 \
+            -p 19001:19001 \
+            -p 19002:19002 \
+            -p 8081:8081 \
+            --name lifestation-container lifestation
+
+      - name: Check container logs
+        run: docker logs lifestation-container
+
+      - name: Cleanup Docker resources
+        if: always()
+        run: |
+          docker stop lifestation-container || true
+          docker rm lifestation-container || true
+          docker rmi lifestation || true
+
         
