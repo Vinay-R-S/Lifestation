@@ -11,7 +11,7 @@ import {
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
 import { useRouter } from 'expo-router';
-import { Colors, TextStyles } from '../../constants/theme'; // Importing theme
+import { Colors, TextStyles } from '../../constants/theme';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -19,11 +19,33 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const validateInput = () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Error', 'Please enter a valid email address');
+      return false;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters long');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleLogin = async () => {
+    if (!validateInput()) return;
+
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // Navigation will occur automatically due to auth observer
+      // Auth state observer will handle navigation
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       Alert.alert('Login Failed', message);
@@ -34,12 +56,12 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={TextStyles.title}>Login</Text>
+      <Text style={styles.title}>Login</Text>
 
       <TextInput
         style={styles.input}
         placeholder="Email"
-        placeholderTextColor={Colors.textMuted}
+        placeholderTextColor={Colors.textSecondary}
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -49,7 +71,7 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder="Password"
-        placeholderTextColor={Colors.textMuted}
+        placeholderTextColor={Colors.textSecondary}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -59,6 +81,7 @@ export default function LoginScreen() {
         style={styles.button}
         onPress={handleLogin}
         disabled={loading}
+        testID="login-button"
       >
         {loading ? (
           <ActivityIndicator color={Colors.textPrimary} />
@@ -68,8 +91,8 @@ export default function LoginScreen() {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.linkContainer}
         onPress={() => router.replace('/auth/signup')}
+        style={styles.linkContainer}
       >
         <Text style={styles.linkText}>Don't have an account? Sign up</Text>
       </TouchableOpacity>
@@ -80,16 +103,21 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background, // Using background from theme
+    backgroundColor: Colors.background,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
+  title: {
+    fontSize: 36,
+    color: Colors.accent,
+    marginBottom: 32,
+  },
   input: {
     width: '100%',
     height: 48,
-    backgroundColor: Colors.surface, // Using surface from theme
-    borderRadius: 8,
+    backgroundColor: Colors.surface,
+    borderRadius: 12,
     paddingHorizontal: 16,
     marginBottom: 16,
     fontSize: 16,
@@ -97,9 +125,9 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
-    backgroundColor: Colors.primary, // Using primary color from theme
+    backgroundColor: Colors.primary,
     paddingVertical: 14,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: 'center',
     marginTop: 8,
   },
@@ -107,8 +135,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   linkText: {
-    color: Colors.secondary, // Using secondary color for link
+    color: Colors.accent,
     fontSize: 16,
-    fontWeight: '500',
   },
 });
