@@ -43,7 +43,8 @@ app-example
 expo-env.d.ts
 # @end expo-cli
 
-LifeStation/package-lock.json
+package-lock.json
 *.zip
+.env
 
 error.txt
