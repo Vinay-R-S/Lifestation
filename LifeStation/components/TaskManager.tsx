@@ -334,12 +334,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginTop: 20,
     color: Colors.textPrimary,
+    textAlign: 'center' as const,
   },
   emptySubtext: {
     fontSize: 14,
     color: Colors.textSecondary,
     marginTop: 8,
-    textAlign: 'center',
+    textAlign: 'center' as const,
   },
 });
 

@@ -59,21 +59,21 @@ export const TextStyles = {
     fontFamily: Fonts.bold,
     fontSize: 36,
     color: Colors.textPrimary,
-    textAlign: 'center',
+    textAlign: 'center' as const,
     letterSpacing: 1.5,
   },
   subtitle: {
     fontFamily: Fonts.fancy,
     fontSize: 20,
     color: Colors.accent,
-    textAlign: 'center',
+    textAlign: 'center' as const,
     marginTop: 10,
   },
   body: {
     fontFamily: Fonts.regular,
     fontSize: 16,
     color: Colors.textPrimary,
-    textAlign: 'left',
+    textAlign: 'left' as const,
   },
   caption: {
     fontFamily: Fonts.regular,
@@ -86,7 +86,7 @@ export const TextStyles = {
     color: Colors.primary,
     textTransform: 'uppercase' as const,
     letterSpacing: 1.2,
-    textAlign: 'center',
+    textAlign: 'center' as const,
   },
   font_family: "sans-serif",
 };

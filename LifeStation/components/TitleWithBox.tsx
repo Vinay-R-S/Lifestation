@@ -2,7 +2,14 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Colors, Fonts } from '../constants/theme'; // Import your theme
 
-const TitleWithBox = ({ title, backgroundColor = Colors.primary, fontSize = 24, textColor = Colors.textPrimary }) => {
+interface TitleWithBoxProps {
+  title: string;
+  backgroundColor?: string;
+  fontSize?: number;
+  textColor?: string;
+}
+
+const TitleWithBox = ({ title, backgroundColor = Colors.primary, fontSize = 24, textColor = Colors.textPrimary }: TitleWithBoxProps) => {
   return (
     <View style={[styles.titleContainer, { backgroundColor }]}>
       <Text style={[styles.title, { fontSize, color: textColor }]}>{title}</Text>
