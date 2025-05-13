@@ -63,14 +63,21 @@ export function GameStateProvider({ children }: GameStateProviderProps) {
   };
 
   const deductHealth = (amount: number) => {
-    setState(prev => ({
-      ...prev,
-      health: Math.max(0, prev.health - amount),
-      notification: {
-        message: `-${amount} health`,
-        type: 'health'
-      }
-    }));
+    setState(prev => {
+      const newHealth = Math.max(0, prev.health - amount);
+      return {
+        ...prev,
+        health: newHealth,
+        // If health reaches 0, set coins to 0
+        coins: newHealth === 0 ? 0 : prev.coins,
+        notification: {
+          message: newHealth === 0 
+            ? 'Game Over! Lost all coins!' 
+            : `-${amount} health`,
+          type: 'health'
+        }
+      };
+    });
   };
 
   const updateLastProgress = (taskId: string) => {
